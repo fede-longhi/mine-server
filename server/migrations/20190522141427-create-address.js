@@ -9,10 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       latitude: {
-        type: Sequelize.NUMBER
+        type: Sequelize.DOUBLE
       },
       longitude: {
-        type: Sequelize.NUMBER
+        type: Sequelize.DOUBLE
       },
       name: {
         type: Sequelize.STRING

@@ -14,6 +14,12 @@ module.exports = {
       licenseNumber: {
         type: Sequelize.STRING
       },
+      totalScore: {
+        type: Sequelize.DOUBLE
+      },
+      scoreQuantity: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -21,6 +27,16 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      partyId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        onDelete: 'SET NULL',
+        references: {
+          model: 'Parties',
+          key: 'id',
+          as: 'partyId',
+        },
       }
     });
   },

@@ -2,12 +2,12 @@
 module.exports = (sequelize, DataTypes) => {
   const Travel = sequelize.define('Travel', {
     status: DataTypes.STRING,
-    smallPetQuantity: DataTypes.NUMBER,
-    mediumPetQuantity: DataTypes.NUMBER,
-    bigPetQuantity: DataTypes.NUMBER,
+    smallPetQuantity: DataTypes.INTEGER,
+    mediumPetQuantity: DataTypes.INTEGER,
+    bigPetQuantity: DataTypes.INTEGER,
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
-    price: DataTypes.NUMBER,
+    price: DataTypes.DOUBLE,
     hasCompanion: DataTypes.BOOLEAN
   }, {});
   Travel.associate = function(models) {

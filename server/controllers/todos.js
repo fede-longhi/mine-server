@@ -16,7 +16,7 @@ module.exports = {
       .findAll({
         include: [{
           model: TodoItem,
-          as: 'todoItems.todoId',
+          as: 'todoItems',
         }],
         order: [
           ['createdAt', 'DESC'],

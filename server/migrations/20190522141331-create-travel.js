@@ -12,13 +12,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       smallPetQuantity: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       mediumPetQuantity: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       bigPetQuantity: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       startDate: {
         type: Sequelize.DATE
@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       price: {
-        type: Sequelize.NUMBER
+        type: Sequelize.DOUBLE
       },
       hasCompanion: {
         type: Sequelize.BOOLEAN

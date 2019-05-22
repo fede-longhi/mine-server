@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const DriverScore = sequelize.define('DriverScore', {
-    value: DataTypes.NUMBER,
+    value: DataTypes.DECIMAL,
     comments: DataTypes.STRING
   }, {});
   DriverScore.associate = function(models) {

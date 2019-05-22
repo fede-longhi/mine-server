@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       value: {
-        type: Sequelize.NUMBER
+        type: Sequelize.DOUBLE
       },
       comments: {
         type: Sequelize.STRING

@@ -12,10 +12,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       totalScore: {
-        type: Sequelize.NUMBER
+        type: Sequelize.DOUBLE
       },
       scoreQuantity: {
-        type: Sequelize.NUMBER
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
