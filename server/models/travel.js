@@ -12,6 +12,18 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Travel.associate = function(models) {
     // associations can be defined here
+    Travel.belongsTo(models.Driver, {
+      as: 'driver'
+    });
+    Travel.belongsTo(models.User, {
+      as: 'user'
+    });
+    // Travel.belongsTo(models.Address, {
+    //   as: 'from'
+    // });
+    // Travel.belongsTo(models.Address, {
+    //   as: 'to'
+    // })
   };
   return Travel;
 };

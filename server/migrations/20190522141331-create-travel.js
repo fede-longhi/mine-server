@@ -39,6 +39,26 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      driverId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: 'SET NULL',
+        references: {
+          model: 'Drivers',
+          key: 'id',
+          as: 'driverId',
+        },
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: 'SET NULL',
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'userId',
+        },
       }
     });
   },

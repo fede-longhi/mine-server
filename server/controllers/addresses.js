@@ -1,4 +1,4 @@
-const UserScore = require('../models').UserScore;
+const Address = require('../models').Address;
 
 module.exports = {
     create(req, res) {},

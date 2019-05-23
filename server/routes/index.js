@@ -3,6 +3,10 @@ const todoItemsController = require('../controllers').todoItems;
 const partiesController = require('../controllers').parties;
 const driversController = require('../controllers').drivers;
 const usersController = require('../controllers').users;
+const travelsController = require('../controllers').travels;
+const userScoresController = require('../controllers').userscores;
+const driverScoresController = require('../controllers').driverscores;
+const addressesController = require('../controllers').addresses;
 
 module.exports = (app) => {
   app.get('/api', (req, res) => res.status(200).send({
@@ -45,7 +49,13 @@ module.exports = (app) => {
   app.delete('/api/users/:userId', usersController.destroy);
 
   // ********************* TRAVELS *************************
+  app.post('/api/travels', travelsController.create);
+  app.get('/api/travels', travelsController.list);
+  //app.get('/api/travels/:travelId', travelsController.retrieve);
+  //app.put('/api/travels/:travelId', travelsController.update);
+  //app.delete('/api/travels/:travelId', travelsController.destroy);
 
+  
   // ********************* DRIVER SCORES *************************
 
   // ********************* USER SCORES *************************
