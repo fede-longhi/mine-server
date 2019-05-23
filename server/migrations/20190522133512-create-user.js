@@ -24,6 +24,16 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      partyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: 'SET NULL',
+        references: {
+          model: 'Parties',
+          key: 'id',
+          as: 'partyId',
+        },
       }
     });
   },

@@ -7,7 +7,8 @@ module.exports = {
           .create({
             status: req.body.status,
             totalScore: req.body.totalScore,
-            scoreQuantity: req.body.scoreQuantity
+            scoreQuantity: req.body.scoreQuantity,
+            partyId: req.body.partyId
           })
           .then(user => res.status(201).send(user))
           .catch(error => res.status(400).send(error));
@@ -15,8 +16,17 @@ module.exports = {
 
     list(req, res) {
         return User
-          .findAll()
+          .findAll({
+              include: [{
+                model: Party,
+                as: 'party',
+              }]
+          })
           .then((users) => res.status(200).send(users))
-          .catch((error) => res.status(400).send(error));
+          .catch((error) => res.status(400).send(error.message));
     },
+
+    retrieve(req, res){},
+    update(req, res){},
+    destroy(req, res){},
 }

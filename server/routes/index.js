@@ -2,6 +2,7 @@ const todosController = require('../controllers').todos;
 const todoItemsController = require('../controllers').todoItems;
 const partiesController = require('../controllers').parties;
 const driversController = require('../controllers').drivers;
+const usersController = require('../controllers').users;
 
 module.exports = (app) => {
   app.get('/api', (req, res) => res.status(200).send({
@@ -25,12 +26,23 @@ module.exports = (app) => {
   // ****************** PARTY ********************
   app.post('/api/parties', partiesController.create);
   app.get('/api/parties', partiesController.list);
+  app.get('/api/parties/:partyId', partiesController.retrieve);
+  app.put('/api/parties/:partyId', partiesController.update);
+  app.delete('/api/parties/:partyId', partiesController.destroy);
 
   // ****************** DRIVERS *******************
   app.post('/api/drivers', driversController.create);
   app.get('/api/drivers', driversController.list);
+  app.get('/api/drivers/:driverId', driversController.retrieve);
+  app.put('/api/drivers/:driverId', driversController.update);
+  app.delete('/api/drivers/:driverId', driversController.destroy);
 
   // ********************* USERS *************************
+  app.post('/api/users', usersController.create);
+  app.get('/api/users', usersController.list);
+  app.get('/api/users/:userId', usersController.retrieve);
+  app.put('/api/users/:userId', usersController.update);
+  app.delete('/api/users/:userId', usersController.destroy);
 
   // ********************* TRAVELS *************************
 

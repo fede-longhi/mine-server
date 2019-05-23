@@ -8,8 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
 
   Driver.associate = function(models) {
-    Driver.hasOne(models.Party, {
-      foreignKey: "partyId",
+    Driver.belongsTo(models.Party, {
       as: "party",
     })
   };

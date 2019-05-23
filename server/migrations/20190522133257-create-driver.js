@@ -30,7 +30,7 @@ module.exports = {
       },
       partyId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: false,
         onDelete: 'SET NULL',
         references: {
           model: 'Parties',

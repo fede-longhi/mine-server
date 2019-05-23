@@ -3,6 +3,7 @@ const todoItems = require('./todoitems');
 const parties = require('./parties');
 const drivers = require('./drivers');
 const users = require('./users');
+const travels = require('./travels');
 
 module.exports = {
   todos,
@@ -10,4 +11,5 @@ module.exports = {
   parties,
   drivers,
   users,
+  travels
 };

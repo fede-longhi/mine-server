@@ -7,10 +7,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Party.associate = function(models) {
     // associations can be defined here
-    Party.belongsTo(models.Driver, {
-      foreignKey: "partyId",
-      onDelete: "SET NULL",
-    })
   };
   return Party;
 };
