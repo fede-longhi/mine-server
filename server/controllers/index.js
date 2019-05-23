@@ -4,6 +4,10 @@ const parties = require('./parties');
 const drivers = require('./drivers');
 const users = require('./users');
 const travels = require('./travels');
+const vehicles = require('./vehicles');
+const driverscores = require('./driverscores');
+const userscores = require('./userscores');
+
 
 module.exports = {
   todos,
@@ -11,5 +15,8 @@ module.exports = {
   parties,
   drivers,
   users,
-  travels
+  travels,
+  vehicles,
+  driverscores,
+  userscores
 };
