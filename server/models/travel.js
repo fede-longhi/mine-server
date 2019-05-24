@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.DOUBLE,
     hasCompanion: DataTypes.BOOLEAN
   }, {});
+  
   Travel.associate = function(models) {
     // associations can be defined here
     Travel.belongsTo(models.Driver, {

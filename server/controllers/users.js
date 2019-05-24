@@ -26,7 +26,56 @@ module.exports = {
           .catch((error) => res.status(400).send(error.message));
     },
 
-    retrieve(req, res){},
-    update(req, res){},
-    destroy(req, res){},
+    retrieve(req, res){
+      return User
+        .findByPk(req.params.userId)
+        .then(user => {
+            if(!user){
+                return res.status(404).send({
+                    message: 'User Not Found',
+                });
+            }
+            return res.status(200).send(user);
+        })
+        .catch(error => res.status(400).send(error));
+    },
+
+    update(req, res){
+      return User
+      .findByPk(req.params.userId)
+      .then(user => {
+        if (!user) {
+          return res.status(404).send({
+            message: 'User Not Found',
+          });
+        }
+        return user
+          .update({
+            status: req.body.status || user.status,
+            totalScore: req.body.totalScore || user.totalScore,
+            scoreQuantity: req.body.scoreQuantity || user.scoreQuantity,
+            partyId: req.body.partyId || user.partyId
+          })
+          .then((user) => res.status(200).send(user))
+          .catch((error) => res.status(400).send(error));
+      })
+      .catch((error) => res.status(400).send(error));
+    },
+
+    destroy(req, res){
+      return User
+        .findByPk(req.params.userId)
+        .then(user => {
+            if (!user) {
+            return res.status(400).send({
+                message: 'User Not Found',
+            });
+            }
+            return user
+            .destroy()
+            .then(() => res.status(204).send())
+            .catch(error => res.status(400).send(error));
+        })
+        .catch(error => res.status(400).send(error));
+    },
 }
