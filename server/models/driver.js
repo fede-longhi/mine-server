@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   Driver.associate = function(models) {
     Driver.belongsTo(models.Party, {
       as: "party",
-    })
+    });
   };
   return Driver;
 };

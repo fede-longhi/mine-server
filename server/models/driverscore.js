@@ -6,6 +6,13 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   DriverScore.associate = function(models) {
     // associations can be defined here
+    DriverScore.belongsTo(models.User, {
+      as: 'from'
+    });
+
+    DriverScore.belongsTo(models.Driver, {
+      as: 'to'
+    })
   };
   return DriverScore;
 };

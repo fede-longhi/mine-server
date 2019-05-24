@@ -53,7 +53,7 @@ module.exports = {
         return driver
           .update({
             status: req.body.status || driver.status,
-            licenseNumber: req.body.licenseNumber,
+            licenseNumber: req.body.licenseNumber || driver.licenseNumber,
             totalScore: req.body.totalScore || driver.totalScore,
             scoreQuantity: req.body.scoreQuantity || driver.scoreQuantity,
             partyId: req.body.partyId || driver.partyId
