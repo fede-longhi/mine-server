@@ -41,7 +41,17 @@ module.exports = {
                     key: 'id',
                     as: 'toId',
                 },
-            }
+            },
+            travelId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                onDelete: 'SET NULL',
+                references: {
+                    model: 'Travels',
+                    key: 'id',
+                    as: 'travelId',
+                }
+            },
         });
     },
     down: (queryInterface, Sequelize) => {

@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     UserScore.belongsTo(models.User, {
       as: 'to'
     });
+
+    UserScore.belongsTo(models.Travel, {
+      as: 'travel'
+    });
+    
   };
   return UserScore;
 };

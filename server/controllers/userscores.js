@@ -8,6 +8,7 @@ module.exports = {
             id: req.body.id,
             fromId: req.body.fromId,
             toId: req.body.toId,
+            travelId: req.body.travelId,
             value: req.body.value,
             comments: req.body.comments
         })

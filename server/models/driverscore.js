@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
 
     DriverScore.belongsTo(models.Driver, {
       as: 'to'
-    })
+    });
+
+    DriverScore.belongsTo(models.Travel, {
+      as: 'travel'
+    });
   };
   return DriverScore;
 };
