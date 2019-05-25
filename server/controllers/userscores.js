@@ -1,4 +1,5 @@
 const UserScore = require('../models').UserScore;
+const User = require('../models').User;
 
 module.exports = {
     create(req, res) {
@@ -10,7 +11,18 @@ module.exports = {
             value: req.body.value,
             comments: req.body.comments
         })
-        .then(userScore => res.status(201).send(userScore))
+        .then(userScore => {
+            User.findByPk(userScore.toId)
+            .then(user => {
+                var newTotalScore = user.totalScore + userScore.value;
+                var newScoreQuantity = user.scoreQuantity + 1;
+                user.update({
+                    totalScore: newTotalScore,
+                    scoreQuantity: newScoreQuantity
+                })
+                res.status(201).send(userScore);
+            })
+        })
         .catch(error => res.status(400).send(error));
     },
 
