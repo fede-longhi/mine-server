@@ -17,3 +17,13 @@ Server para la plataforma de movilidad de mascotas.
   ```sh
     npm run start:dev
   ```
+
+# Load server with Artillery
+ - Instalar
+  ```sh
+    https://artillery.io/docs/getting-started/
+  ```
+ - Run example
+  ```sh
+    artillery run travel.yaml
+  ```

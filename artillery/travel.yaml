@@ -1,0 +1,9 @@
+config:
+  target: 'http://localhost:8081/api'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+scenarios:
+  - flow:
+    - get:
+        url: "/travels"
