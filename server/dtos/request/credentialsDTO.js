@@ -1,14 +1,14 @@
 exports.RegisterRequestDTO = class RegisterRequestDTO {
     constructor(arg) {
         if (arg instanceof Map) {
-            if (arg.has('id')) {
-                this.id = arg.get('id');
+            if (arg.has('facebookId')) {
+                this.facebookId = arg.get('facebookId');
             }
-            if (arg.has('rol')) {
-                this.rol = arg.get('rol');
+            if (arg.has('role')) {
+                this.role = arg.get('role');
             }
             if (arg.has('name')) {
-                this.firstName = arg.get('firstName');
+                this.name = arg.get('name');
             }
             if (arg.has('phone')) {
                 this.phone = arg.get('phone');
@@ -16,12 +16,16 @@ exports.RegisterRequestDTO = class RegisterRequestDTO {
             if (arg.has('dni')) {
                 this.dni = arg.get('dni');
             }
+            if (arg.has('licenseNumber')) {
+                this.licenseNumber = arg.get('licenseNumber');
+            }
         } else {
-            this.id = arg.id;
-            this.rol = arg.rol;
-            this.firstName = arg.firstName;
+            this.facebookId = arg.facebookId;
+            this.role = arg.role;
+            this.name = arg.name;
             this.phone = arg.phone;
             this.dni = arg.dni;
+            this.licenseNumber = arg.licenseNumber;
         }
     }
 }
