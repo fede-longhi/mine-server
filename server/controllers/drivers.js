@@ -64,6 +64,7 @@ module.exports = {
       .catch((error) => res.status(400).send(error));
   },
 
+
   destroy(req, res){
     return Driver
         .findByPk(req.params.driverId)

@@ -7,6 +7,7 @@ const travels = require('./travels');
 const vehicles = require('./vehicles');
 const driverscores = require('./driverscores');
 const userscores = require('./userscores');
+const login = require('./login');
 
 
 module.exports = {
@@ -18,5 +19,6 @@ module.exports = {
   travels,
   vehicles,
   driverscores,
-  userscores
+  userscores,
+  login
 };
