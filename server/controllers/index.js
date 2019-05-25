@@ -7,18 +7,18 @@ const travels = require('./travels');
 const vehicles = require('./vehicles');
 const driverscores = require('./driverscores');
 const userscores = require('./userscores');
-const login = require('./login');
+const credentials = require('./credentials');
 
 
 module.exports = {
-  todos,
-  todoItems,
-  parties,
-  drivers,
-  users,
-  travels,
-  vehicles,
-  driverscores,
-  userscores,
-  login
+    todos,
+    todoItems,
+    parties,
+    drivers,
+    users,
+    travels,
+    vehicles,
+    driverscores,
+    userscores,
+    credentials
 };
