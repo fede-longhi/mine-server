@@ -7,6 +7,7 @@ const travelsController = require('../controllers').travels;
 const userScoresController = require('../controllers').userscores;
 const driverScoresController = require('../controllers').driverscores;
 const addressesController = require('../controllers').addresses;
+const loginController = require('../controllers').login;
 
 module.exports = (app) => {
   app.get('/api', (req, res) => res.status(200).send({
@@ -55,6 +56,8 @@ module.exports = (app) => {
   app.put('/api/travels/:travelId', travelsController.update);
   app.delete('/api/travels/:travelId', travelsController.destroy);
 
+  // ********************* LOGIN *************************
+  app.post('/api/login', loginController.login);
   
   // ********************* DRIVER SCORES *************************
 
