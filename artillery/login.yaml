@@ -1,0 +1,12 @@
+config:
+  target: 'http://localhost:8081/api'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+scenarios:
+  - flow:
+    - post:
+        url: "/login"
+        json:
+          "facebookId": "123456780"
+          "role": "user"
