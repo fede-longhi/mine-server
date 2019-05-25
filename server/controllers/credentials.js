@@ -2,6 +2,7 @@ const Driver = require('../models').Driver;
 const Party = require('../models').Party;
 const User = require('../models').User;
 const credentialsDTO = require('../dtos/request/credentialsDTO');
+const sequelize = require('../models/index').sequelize;
 
 module.exports = {
     login(req, res) {
@@ -48,14 +49,32 @@ module.exports = {
         try {
             var registerRequestDTO = new credentialsDTO.RegisterRequestDTO(req.body);
             if (registerRequestDTO.role == 'user') {
-                User.findByPK(partyCredentialsRequestDTO.id)
+                User.findByPk(registerRequestDTO.facebookId)
                     .then(user => {
                         if (user != null) {
-                            res.status(203).send({ status: 203, message: "User already exists" });
+                            return res.status(203).send({ status: 203, message: "User already exists" });
                         } else {
-                            User.create(registerRequestDTO)
-                                .then(user => {
-                                    res.status(200).send(JSON.stringify({ status: 200, message: "User register successfuly" }));
+                            sequelize.transaction(t => {
+                                    Party.create({
+                                            name: registerRequestDTO.name,
+                                            phone: registerRequestDTO.phone,
+                                            dni: registerRequestDTO.dni,
+                                        })
+                                        .then(party => {
+                                            User.create({
+                                                    id: registerRequestDTO.facebookId,
+                                                    status: registerRequestDTO.status,
+                                                    totalScore: 0,
+                                                    scoreQuantity: 0,
+                                                    partyId: party.id
+                                                })
+                                                .then(res.status(200).send(JSON.stringify({ status: 200, message: "User register successfuly" })))
+                                                .catch(err => {
+                                                    console.error(err);
+                                                    res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
+                                                });
+                                        })
+                                        .catch(error => res.status(400).send(error));
                                 })
                                 .catch(err => {
                                     console.error(err);
@@ -63,21 +82,34 @@ module.exports = {
                                 });
                         }
                     })
-                    .catch(err => {
-                        console.error(err);
-                        res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
-                    });
-
-
             } else if (registerRequestDTO.role == 'driver') {
-                Driver.findByPK(partyCredentialsRequestDTO.id)
+                Driver.findByPk(registerRequestDTO.facebookId)
                     .then(driver => {
                         if (driver != null) {
-                            res.status(203).send({ status: 203, message: "driver already exists" });
+                            return res.status(203).send({ status: 203, message: "Driver already exists" });
                         } else {
-                            driver.create(registerRequestDTO)
-                                .then(driver => {
-                                    res.status(200).send(JSON.stringify({ status: 200, message: "driver register successfuly" }));
+                            sequelize.transaction(t => {
+                                    Party.create({
+                                            name: registerRequestDTO.name,
+                                            phone: registerRequestDTO.phone,
+                                            dni: registerRequestDTO.dni,
+                                        })
+                                        .then(party => {
+                                            Driver.create({
+                                                    id: registerRequestDTO.facebookId,
+                                                    status: registerRequestDTO.status,
+                                                    licenseNumber: registerRequestDTO.licenseNumber,
+                                                    totalScore: 0,
+                                                    scoreQuantity: 0,
+                                                    partyId: party.id
+                                                })
+                                                .then(res.status(200).send(JSON.stringify({ status: 200, message: "Driver register successfuly" })))
+                                                .catch(err => {
+                                                    console.error(err);
+                                                    res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
+                                                });
+                                        })
+                                        .catch(error => res.status(400).send(error));
                                 })
                                 .catch(err => {
                                     console.error(err);
@@ -85,10 +117,8 @@ module.exports = {
                                 });
                         }
                     })
-                    .catch(err => {
-                        console.error(err);
-                        res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
-                    });
+            } else {
+                return res.status(412).send({ status: 412, message: "Precondition failed" });
             }
         } catch (error) {
             console.error(error);
