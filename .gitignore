@@ -1,0 +1,12 @@
+# Dependency directories
+node_modules/
+
+# Logs
+package-lock.json
+
+#Visualcode
+.vscode/
+
+# configuration file
+server/config/config.json
+
