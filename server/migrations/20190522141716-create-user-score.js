@@ -22,24 +22,24 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            from: {
+            fromId: {
                 type: Sequelize.STRING,
                 allowNull: false,
                 onDelete: 'CASCADE',
                 references: {
                     model: 'Drivers',
                     key: 'id',
-                    as: 'from',
+                    as: 'fromId',
                 },
             },
-            to: {
+            toId: {
                 type: Sequelize.STRING,
                 allowNull: false,
                 onDelete: 'CASCADE',
                 references: {
                     model: 'Users',
                     key: 'id',
-                    as: 'to',
+                    as: 'toId',
                 },
             }
         });
