@@ -1,4 +1,5 @@
 const distanceUtil = require('../utils').distanceUtils;
+const utils = require('../utils').utils;
 
 require("custom-env").env("travelQuote");
 
@@ -14,11 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.DOUBLE,
     hasCompanion: DataTypes.BOOLEAN
   },
-  {
-    // instanceMethods: {
-    //   quote: function(){ return 1 }
-    // }
-  });
+  {});
   
   Travel.associate = function(models) {
     // associations can be defined here
@@ -37,19 +34,31 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Travel.prototype.quote = function(){
+    var travel = this;
     var price = 0;
     price += this.smallPetQuantity * process.env.PRICE_PER_SMALL_PET;
     price += this.mediumPetQuantity * process.env.PRICE_PER_MEDIUM_PET;
     price += this.bigPetQuantity * process.env.PRICE_PER_BIG_PET;
-    // console.log(distanceUtil.getDistance(1,2));
-    // console.log(this);
-    // var distanceMatrixElements = distanceUtil.getDistance(this.fromId, this.toId);
-    // console.log(distanceMatrixElements);
-    // console.log(distanceMatrixElements.distance.value/100000);
-    // console.log(distanceMatrixElements.duration.value);
-    // price += (distanceMatrixElements.distance.value/100000)*process.env.PRICE_PER_KM;
-    // price += (distanceMatrixElements.duration.value)*process.env.PRICE_PER_MINUTE;
-    return price;
-  }
+    price = parseFloat(price);
+    if (this.hasCompanion){
+      price += parseFloat(process.env.PRICE_COMPANION);
+    }
+
+    return new Promise(function(resolve, reject){
+      distanceUtil.getDistance(1,2)
+      .then(distanceElements => {
+
+        price += (distanceElements.distance.value/1000) * process.env.PRICE_PER_KM;
+        price += (distanceElements.duration.value/60) * process.env.PRICE_PER_MINUTE;
+        
+        if (utils.isNightTime(travel.startDate)){
+          price += price*process.env.PERCENTAGE_NIGHT_PRICE;
+        }
+        resolve(price);
+      })
+      .catch(error => reject(error));
+    });
+  };
+
   return Travel;
 };

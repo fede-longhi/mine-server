@@ -155,12 +155,13 @@ module.exports = {
     quote(req, res){
         return Travel.findByPk(req.params.travelId)
         .then(travel =>{
-            var travelPrice = travel.quote();
-            travel.update({
-                price: travelPrice
-            })
-            .then((travel) => res.status(200).send({quote: travelPrice}))
-            .catch(error => res.stauts(400).send(error));
+            travel.quote().then(travelPrice => {
+                travel.update({
+                    price: travelPrice
+                })
+                .then((travel) => res.status(200).send({quote: travelPrice}))
+                .catch(error => res.stauts(400).send(error));
+            });
         })
         .catch(error => res.status(400).send(error));
     },
@@ -177,11 +178,12 @@ module.exports = {
             fromId: req.body.fromId,
             toId: req.body.toId
         });
-        var travelPrice = travel.quote();
-        travel.price = travelPrice;
-        travel.save()
-        .then(travel => res.status(200).send(travel))
-        .catch(error => res.status(400).send(error.message));
+        travel.quote().then(travelPrice => {
+            travel.price = travelPrice;
+            travel.save()
+            .then(travel => res.status(200).send(travel))
+            .catch(error => res.status(400).send(error));
+        }).catch(error => res.status(400).send(error));
     },
     
     /*
