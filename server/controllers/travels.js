@@ -3,7 +3,11 @@ const allSockets = require("../../bin/www");
 const TRAVEL_COMPLETED = "completed";
 const TRAVEL_CANCELED_BY_USER = "canceled by user";
 const TRAVEL_CANCELED_BY_DRIVER = "canceled by driver";
+const VALUE_BY_DRIVER_CANCELED_TRAVEL = 0;
+const COMMENT_BY_DRIVER_CANCELED_TRAVEL = "The travel was canceled by driver";
 const travelDTO = require('../dtos/request/travelDTO');
+const DriverScore = require('../models').DriverScore;
+const Driver = require('../models').Driver;
 
 module.exports = {
     create(req, res) {
@@ -179,12 +183,31 @@ module.exports = {
                         .findByPk(aTravelCancelRequestDTO.travelId)
                         .then(travel => {
                             Travel.update({ "status": TRAVEL_CANCELED_BY_DRIVER }, { where: { "id": travel.id } })
-                                .then(travel => {
-                                    console.log("Travel update right");
-                                    aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
-                                    return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by Driver ok" }));
+                            console.log("Travel update right");
+                            aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
+                            DriverScore
+                                .create({
+                                    fromId: travel.userId,
+                                    toId: travel.driverId,
+                                    travelId: travel.id,
+                                    value: VALUE_BY_DRIVER_CANCELED_TRAVEL,
+                                    comments: COMMENT_BY_DRIVER_CANCELED_TRAVEL
+                                })
+                                .then(driverScore => {
+                                    Driver.findByPk(driverScore.toId)
+                                        .then(driver => {
+                                            var newTotalScore = driver.totalScore + driverScore.value;
+                                            var newScoreQuantity = driver.scoreQuantity + 1;
+                                            driver.update({
+                                                totalScore: newTotalScore,
+                                                scoreQuantity: newScoreQuantity
+                                            })
+                                            return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by Driver ok" }));
+                                        })
+                                        .catch(error => { throw error });
                                 })
                                 .catch(error => { throw error });
+
                         })
                         .catch(error => { throw error });
                 }
