@@ -19,12 +19,12 @@ module.exports = (sequelize, DataTypes) => {
     Travel.belongsTo(models.User, {
       as: 'user'
     });
-    // Travel.belongsTo(models.Address, {
-    //   as: 'from'
-    // });
-    // Travel.belongsTo(models.Address, {
-    //   as: 'to'
-    // })
+    Travel.belongsTo(models.Address, {
+      as: 'from'
+    });
+    Travel.belongsTo(models.Address, {
+      as: 'to'
+    })
   };
   return Travel;
 };
