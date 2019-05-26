@@ -42,7 +42,7 @@ module.exports = {
             },
             driverId: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
                 onDelete: 'SET NULL',
                 references: {
                     model: 'Drivers',
