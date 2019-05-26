@@ -12,6 +12,8 @@ module.exports = {
         hasCompanion: true,
         driverId: '987654321',
         userId: '123456782',
+        fromId: 1,
+        toId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
       }
