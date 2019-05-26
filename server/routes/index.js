@@ -56,6 +56,7 @@ module.exports = (app) => {
     app.put('/api/travels/:travelId', travelsController.update);
     app.delete('/api/travels/:travelId', travelsController.destroy);
     app.post('/api/travels/finalize', travelsController.finalize);
+    app.post('/api/travels/cancel', travelsController.cancel);
 
     // ********************* CREDENTIALS *************************
     app.post('/api/login', credentialsController.login);

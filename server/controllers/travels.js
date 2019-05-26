@@ -1,6 +1,8 @@
 const Travel = require('../models').Travel;
 const allSockets = require("../../bin/www");
 const TRAVEL_COMPLETED = "completed";
+const TRAVEL_CANCELED_BY_USER = "canceled by user";
+const TRAVEL_CANCELED_BY_DRIVER = "canceled by driver";
 const travelDTO = require('../dtos/request/travelDTO');
 
 module.exports = {
@@ -92,10 +94,10 @@ module.exports = {
         PRE CONDITION: This endpoint is used only for drivers, when finalized their travels
     */
     finalize(req, res) {
-        var aTravelFinalizeRequestDTO = new travelDTO.TravelFinalizeRequestDTO(req.body);
-        var connectionUsers = allSockets.connectionUsers;
-        var aConnectionUser = null;
         try {
+            var aTravelFinalizeRequestDTO = new travelDTO.TravelFinalizeRequestDTO(req.body);
+            var connectionUsers = allSockets.connectionUsers;
+            var aConnectionUser = null;
             try {
                 if (connectionUsers != undefined && connectionUsers.has(aTravelFinalizeRequestDTO.id)) {
                     aConnectionUser = connectionUsers.get(aTravelFinalizeRequestDTO.id)
@@ -108,12 +110,10 @@ module.exports = {
                 return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
             } else {
                 console.info("Available User");
-
                 Travel
                     .findByPk(aTravelFinalizeRequestDTO.travelId)
                     .then(travel => {
-                        travel.status = TRAVEL_COMPLETED;
-                        travel.update(travel)
+                        Travel.update({ "status": TRAVEL_COMPLETED }, { where: { "id": travel.id } })
                             .then(travel => {
                                 console.log("Travel update right");
                                 aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
@@ -122,6 +122,74 @@ module.exports = {
                             .catch(error => { throw error });
                     })
                     .catch(error => { throw error });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send(error);
+        }
+    },
+
+    cancel(req, res) {
+        try {
+            var aTravelCancelRequestDTO = new travelDTO.TravelCancelRequestDTO(req.body);
+            var connectionUsers = allSockets.connectionUsers;
+            var connectionDrivers = allSockets.connectionDrivers;
+            var aConnectionUser = null;
+            var aConnectionDriver = null;
+            if (aTravelCancelRequestDTO.role == 'user') {
+                try {
+                    if (connectionDrivers != undefined && connectionDrivers.has(aTravelCancelRequestDTO.id)) {
+                        aConnectionDriver = connectionDrivers.get(aTravelCancelRequestDTO.id)
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+                if (aConnectionDriver == null || aConnectionDriver == undefined) {
+                    console.error("There are no Drivers");
+                    return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Drivers" }));
+                } else {
+                    console.info("Available Driver");
+                    Travel
+                        .findByPk(aTravelCancelRequestDTO.travelId)
+                        .then(travel => {
+                            Travel.update({ "status": TRAVEL_CANCELED_BY_USER }, { where: { "id": travel.id } })
+                                .then(travel => {
+                                    console.log("Travel update right");
+                                    aConnectionDriver.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by User ok" });
+                                    return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by User ok" }));
+                                })
+                                .catch(error => { throw error });
+                        })
+                        .catch(error => { throw error });
+                }
+            } else if (aTravelCancelRequestDTO.role == 'driver') {
+                try {
+                    if (connectionUsers != undefined && connectionUsers.has(aTravelCancelRequestDTO.id)) {
+                        aConnectionUser = connectionUsers.get(aTravelCancelRequestDTO.id)
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+                if (aConnectionUser == null || aConnectionUser == undefined) {
+                    console.error("There are no Users");
+                    return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
+                } else {
+                    console.info("Available User");
+                    Travel
+                        .findByPk(aTravelCancelRequestDTO.travelId)
+                        .then(travel => {
+                            Travel.update({ "status": TRAVEL_CANCELED_BY_DRIVER }, { where: { "id": travel.id } })
+                                .then(travel => {
+                                    console.log("Travel update right");
+                                    aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
+                                    return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by Driver ok" }));
+                                })
+                                .catch(error => { throw error });
+                        })
+                        .catch(error => { throw error });
+                }
+            } else {
+                return res.status(412).send({ status: 412, message: "Precondition failed" });
             }
         } catch (error) {
             console.error(error);
