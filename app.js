@@ -1,6 +1,11 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+require("custom-env").env("pmm");
+
+const distance = require('google-distance-matrix');
+distance.key(process.env.GOOGLE_API_KEY);
+distance.mode('driving');
 
 const app = express();
 app.use(logger('dev'));

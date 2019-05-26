@@ -42,7 +42,7 @@ module.exports = {
             },
             driverId: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
                 onDelete: 'SET NULL',
                 references: {
                     model: 'Drivers',
@@ -59,7 +59,27 @@ module.exports = {
                     key: 'id',
                     as: 'userId',
                 },
-            }
+            },
+            fromId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                onDelete: 'SET NULL',
+                references: {
+                    model: 'Addresses',
+                    key: 'id',
+                    as: 'fromId',
+                },
+            },
+            toId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                onDelete: 'SET NULL',
+                references: {
+                    model: 'Addresses',
+                    key: 'id',
+                    as: 'toId',
+                },
+            },
         });
     },
     down: (queryInterface, Sequelize) => {
