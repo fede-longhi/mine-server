@@ -54,8 +54,8 @@ io.on('connection', (socket) => {
             connectionDrivers.delete(socket.id);
 
             //delete driver for algorithm find driver for travel
-            var connection = connectionDrivers.get(socket.id);
-            positionDrivers.delete(connection.id);
+            //var connection = connectionDrivers.get(socket.id);
+            //positionDrivers.delete(connection.id);
         }
         socket.disconnect(true);
     });
