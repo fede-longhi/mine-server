@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     endDate: DataTypes.DATE,
     price: DataTypes.DOUBLE,
     hasCompanion: DataTypes.BOOLEAN,
-    from: DataTypes.STRING,
-    to: DataTypes.STRING
+    // from: DataTypes.STRING,
+    // to: DataTypes.STRING
   },
   {});
   
@@ -27,12 +27,12 @@ module.exports = (sequelize, DataTypes) => {
     Travel.belongsTo(models.User, {
       as: 'user'
     });
-    // Travel.belongsTo(models.Address, {
-    //   as: 'from'
-    // });
-    // Travel.belongsTo(models.Address, {
-    //   as: 'to'
-    // })
+    Travel.belongsTo(models.Address, {
+      as: 'from'
+    });
+    Travel.belongsTo(models.Address, {
+      as: 'to'
+    })
   };
 
   Travel.prototype.quote = function(){

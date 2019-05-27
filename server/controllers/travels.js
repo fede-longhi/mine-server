@@ -42,6 +42,8 @@ module.exports = {
                 price: req.body.price,
                 hasCompanion: req.body.hasCompanion,
                 driverId: req.body.driverId,
+                fromId: req.body.fromId,
+                toId: req.body.toId,
                 userId: req.body.userId
             })
             .then(travel => res.status(201).send(travel))
@@ -50,18 +52,17 @@ module.exports = {
 
     list(req, res) {
         return Travel
-            // .findAll({
-            //     include: [{
-            //             model: Address,
-            //             as: 'from'
-            //         },
-            //         {
-            //             model: Address,
-            //             as: 'to'
-            //         }
-            //     ]
-            // })
-            .findAll()
+            .findAll({
+                include: [{
+                        model: Address,
+                        as: 'from'
+                    },
+                    {
+                        model: Address,
+                        as: 'to'
+                    }
+                ]
+            })
             .then((travels) => res.status(200).send(travels))
             .catch(error => res.status(400).send(error.message));
     },
@@ -107,12 +108,12 @@ module.exports = {
             })
     },
 
-    list(req, res) {
-        return Travel
-            .findAll()
-            .then((travels) => res.status(200).send(travels))
-            .catch(error => res.status(400).send(error.message));
-    },
+    // list(req, res) {
+    //     return Travel
+    //         .findAll()
+    //         .then((travels) => res.status(200).send(travels))
+    //         .catch(error => res.status(400).send(error.message));
+    // },
 
     retrieve(req, res) {
         return Travel
@@ -185,6 +186,41 @@ module.exports = {
             });
         })
         .catch(error => res.status(400).send(error));
+    },
+
+    simulateQuote(req, res) {
+        var travel = Travel.build({
+            status: 'quoted',
+            smallPetQuantity: req.body.smallPetQuantity,
+            mediumPetQuantity: req.body.mediumPetQuantity,
+            bigPetQuantity: req.body.bigPetQuantity,
+            price: 0,
+            hasCompanion: req.body.hasCompanion,
+            userId: req.body.userId
+        });
+
+        Address.create({
+            latitude: req.body.from.latitude,
+            longitude: req.body.from.longitude
+        })
+        .then(from => {
+            Address.create({
+                latitude: req.body.to.latitude,
+                longitude: req.body.to.longitude
+            })
+            .then(to => {
+                travel.fromId = from.id;
+                travel.toId = to.id;
+                travel.quote().then(travelPrice => {
+                    travel.price = travelPrice;
+                    travel.save()
+                    .then(travel => res.status(200).send(travel))
+                    .catch(error => res.status(400).send(error.message));
+                }).catch(error => res.status(400).send(error.message));
+            })
+            .catch(error => res.status(400).send(error.message));
+        })
+        .catch(error => res.status(400).send(error.message));
     },
 
     confirmation(req, res) {
@@ -269,27 +305,6 @@ module.exports = {
                 }
             }
         }
-    },
-
-    simulateQuote(req, res) {
-        var travel = Travel.build({
-            status: 'quoted',
-            smallPetQuantity: req.body.smallPetQuantity,
-            mediumPetQuantity: req.body.mediumPetQuantity,
-            bigPetQuantity: req.body.bigPetQuantity,
-            price: 0,
-            hasCompanion: req.body.hasCompanion,
-            userId: req.body.userId,
-            fromId: req.body.fromId,
-            toId: req.body.toId
-        });
-
-        travel.quote().then(travelPrice => {
-            travel.price = travelPrice;
-            travel.save()
-            .then(travel => res.status(200).send(travel))
-            .catch(error => res.status(400).send(error));
-        }).catch(error => res.status(400).send(error));
     },
 
     /*
