@@ -27,7 +27,7 @@ exports.responseOfDriverToTravels = responseOfDriverToTravels;
  * is reemplace for a service that found travels, users, drivers
  * of the DB
  */
-//travelService = require("./mock/travelServiceMock"),
+travelService = require("../mock/travelServiceMock");
 
 module.exports = {
     create(req, res) {
@@ -189,6 +189,7 @@ module.exports = {
     },
 
     simulateQuote(req, res) {
+        console.log("DATA: "+JSON.stringify(req.body));
         var travel = Travel.build({
             status: 'quoted',
             smallPetQuantity: req.body.smallPetQuantity,
@@ -240,7 +241,7 @@ module.exports = {
             /***
              * Este comentario es sólo para mockear
              */
-            managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelID)
+            managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
                 .then((value) => {
                     console.log("respuesta de manager: " + value);
                     res.status(200).send({ status: 200, message: "su chofer está en camino" });
@@ -255,11 +256,15 @@ module.exports = {
             //if travel is rejected
             if (!aTravelConfirmationRequestDTO.accept) {
                 console.log("------------------ travel is rejected ------------------");
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelID, false);
+                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, false);
+                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= false;
+                console.log("responses DRIVER endpoint: "+JSON.stringify(responseOfDriverToTravels));
                 res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
             } else {
                 //travel is accepted
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelID, true);
+                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, true);
+                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= true;
+                console.log("responses DRIVER endpoint: "+JSON.stringify(responseOfDriverToTravels));
                 console.log("------------------ travel is accepted ------------------");
                 /**
                  * HARCODEOOOOOO
@@ -282,14 +287,14 @@ module.exports = {
                 } else {
                     console.info("Available User");
                     // logica de mandar el emit al chofer
-                    //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelID);
+                    //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelId);
                     try {
-                        //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelID);
+                        //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelId);
                         //aTravel.driverID = aTravelConfirmationRequestDTO.id;
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                        aTravelConfirmationResponseDTO.travelID = /*aTravel.travelID;*/ "0";
+                        aTravelConfirmationResponseDTO.travelId = /*aTravel.travelId;*/ "0";
                         aTravelConfirmationResponseDTO.time = /*Math.round(aTravel.time);*/ "123";
-                        aTravelConfirmationResponseDTO.driver = /*travelService.findDriver(aTravel.driverID);*/ "123";
+                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(1);
 
                         console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
 
@@ -298,8 +303,8 @@ module.exports = {
                         console.log("Se mandó al usuario ");
 
                         aTravelConfirmationResponseDTO.driver = null;
-                        aTravelConfirmationResponseDTO.user = /*travelService.findUser(aTravel.userID);*/ "123";
-                        aTravelConfirmationResponseDTO
+                        aTravelConfirmationResponseDTO.user = travelService.findUser(1);
+
                         res.status(200).send(aTravelConfirmationResponseDTO);
                     } catch (error) {
                         res.status(500).send(error);

@@ -2,28 +2,28 @@ var partyDTOModel = require('./partyDTO');
 
 exports.TravelCotizationDTO = class TravelCotizationDTO {
     constructor() {
-        this.travelID;
+        this.travelId;
         this.price;
     }
 };
 
 exports.TravelNotificationDTO = class TravelNotificationDTO {
     constructor() {
-        this.travelID;
+        this.travelId;
         this.from;
         this.to;
-        this.petAmountSmall;
-        this.petAmountMedium;
-        this.petAmountLarge;
-        this.hasACompanion;
+        this.smallPetQuantity;
+        this.mediumPetQuantity;
+        this.bigPetQuantity;
+        this.hasCompanion;
     }
 };
 
 exports.TravelConfirmationRequestDTO = class TravelConfirmationRequestDTO {
     constructor(arg) {
         if (arg instanceof Map) {
-            if (arg.has('travelID')) {
-                this.travelID = arg.get('travelID');
+            if (arg.has('travelId')) {
+                this.travelId = arg.get('travelId');
             }
             if (arg.has('rol')) {
                 this.rol = arg.get('rol');
@@ -35,7 +35,7 @@ exports.TravelConfirmationRequestDTO = class TravelConfirmationRequestDTO {
                 this.id = arg.get('accept');
             }
         } else {
-            this.travelID = arg.travelID;
+            this.travelId = arg.travelId;
             this.rol = arg.rol;
             this.id = arg.id;
             this.accept = arg.accept;
@@ -45,7 +45,7 @@ exports.TravelConfirmationRequestDTO = class TravelConfirmationRequestDTO {
 
 exports.TravelConfirmationResponseDTO = class TravelConfirmationResponseDTO {
     constructor() {
-        this.travelID;
+        this.travelId;
         this.user = new partyDTOModel.UserDTO();
         this.driver = new partyDTOModel.DriverDTO();
         this.time;
