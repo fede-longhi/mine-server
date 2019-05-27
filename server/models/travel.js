@@ -47,7 +47,9 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     return new Promise(function(resolve, reject){
-      distanceUtil.getDistance(1,2)
+      var origin = travel.from.latitude.toString() + ',' + travel.from.longitude.toString();
+      var destination = travel.to.latitude.toString() + ',' + travel.to.longitude.toString();
+      distanceUtil.getDistance(origin, destination)
       .then(distanceElements => {
 
         price += (distanceElements.distance.value/1000) * process.env.PRICE_PER_KM;

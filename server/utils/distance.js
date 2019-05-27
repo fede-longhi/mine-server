@@ -4,8 +4,10 @@ distance.key(process.env.GOOGLE_API_KEY);
 
 module.exports = {
     getDistance(origin, destination){
-        var origins = ['40.7421,-73.9914',];
-        var destinations = ['41.8337329,-87.7321554',];
+        var origins = [origin,];
+        var destinations = [destination,];
+        console.log(origin);
+        console.log(destination);
         return new Promise(function(resolve, reject){
             distance.matrix(origins, destinations, function (err, distances) {
                 if (err) {

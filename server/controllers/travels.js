@@ -209,6 +209,8 @@ module.exports = {
                 longitude: req.body.to.longitude
             })
             .then(to => {
+                travel.from = from;
+                travel.to = to;
                 travel.fromId = from.id;
                 travel.toId = to.id;
                 travel.quote().then(travelPrice => {
