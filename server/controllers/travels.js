@@ -50,17 +50,18 @@ module.exports = {
 
     list(req, res) {
         return Travel
-            .findAll({
-                include: [{
-                        model: Address,
-                        as: 'from'
-                    },
-                    {
-                        model: Address,
-                        as: 'to'
-                    }
-                ]
-            })
+            // .findAll({
+            //     include: [{
+            //             model: Address,
+            //             as: 'from'
+            //         },
+            //         {
+            //             model: Address,
+            //             as: 'to'
+            //         }
+            //     ]
+            // })
+            .findAll()
             .then((travels) => res.status(200).send(travels))
             .catch(error => res.status(400).send(error.message));
     },

@@ -12,8 +12,10 @@ module.exports = {
         hasCompanion: true,
         driverId: '987654321',
         userId: '123456782',
-        fromId: 1,
-        toId: 2,
+        from: '{"latitude":14.01,"longitude":14.01}',
+        to:'{"latitude":14.10,"longitude":14.10}',
+        // fromId: 1,
+        // toId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
       }

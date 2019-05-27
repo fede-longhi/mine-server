@@ -32,6 +32,12 @@ module.exports = {
             hasCompanion: {
                 type: Sequelize.BOOLEAN
             },
+            from: {
+                type: Sequelize.STRING
+            },
+            to: {
+                type: Sequelize.STRING
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
@@ -60,26 +66,26 @@ module.exports = {
                     as: 'userId',
                 },
             },
-            fromId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                onDelete: 'SET NULL',
-                references: {
-                    model: 'Addresses',
-                    key: 'id',
-                    as: 'fromId',
-                },
-            },
-            toId: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                onDelete: 'SET NULL',
-                references: {
-                    model: 'Addresses',
-                    key: 'id',
-                    as: 'toId',
-                },
-            },
+            // fromId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: false,
+            //     onDelete: 'SET NULL',
+            //     references: {
+            //         model: 'Addresses',
+            //         key: 'id',
+            //         as: 'fromId',
+            //     },
+            // },
+            // toId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: false,
+            //     onDelete: 'SET NULL',
+            //     references: {
+            //         model: 'Addresses',
+            //         key: 'id',
+            //         as: 'toId',
+            //     },
+            // },
         });
     },
     down: (queryInterface, Sequelize) => {
