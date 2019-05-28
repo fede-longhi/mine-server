@@ -1,6 +1,9 @@
 # Dependency directories
 node_modules/
 
+# configuration 
+server/config/config.json
+
 # Logs
 package-lock.json
 
