@@ -10,6 +10,7 @@ const addressesController = require('../controllers').addresses;
 const credentialsController = require('../controllers').credentials;
 
 module.exports = (app) => {
+    app.post('/travel/cotization', travelsController.simulateQuote);
     app.get('/api', (req, res) => res.status(200).send({
         message: 'Welcome to the UberPets API!',
     }));
@@ -54,6 +55,7 @@ module.exports = (app) => {
     app.get('/api/travels', travelsController.list);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
     app.post('/api/travels/simulateQuote', travelsController.simulateQuote);
+    
     app.get('/api/travels/:travelId', travelsController.retrieve);
     app.put('/api/travels/:travelId', travelsController.update);
     app.delete('/api/travels/:travelId', travelsController.destroy);

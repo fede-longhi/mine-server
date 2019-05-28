@@ -189,6 +189,7 @@ module.exports = {
     },
 
     simulateQuote(req, res) {
+        console.log(req.body);
         var travel = Travel.build({
             status: 'quoted',
             smallPetQuantity: req.body.smallPetQuantity,
@@ -214,7 +215,7 @@ module.exports = {
                 travel.fromId = from.id;
                 travel.toId = to.id;
                 travel.quote().then(travelPrice => {
-                    travel.price = travelPrice;
+                    travel.price = Math.round(travelPrice);
                     travel.save()
                     .then(travel => res.status(200).send(travel))
                     .catch(error => res.status(400).send(error.message));
