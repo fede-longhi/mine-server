@@ -27,7 +27,7 @@ module.exports = {
     
     Travel : class Travel {
         constructor(id, from, to) {
-            this.travelID = id;
+            this.travelId = id;
             this.from = from;
             this.to = to;
             this.driverID;

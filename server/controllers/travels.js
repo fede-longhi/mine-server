@@ -27,7 +27,7 @@ exports.responseOfDriverToTravels = responseOfDriverToTravels;
  * is reemplace for a service that found travels, users, drivers
  * of the DB
  */
-//travelService = require("./mock/travelServiceMock"),
+travelService = require("../mock/travelServiceMock");
 
 module.exports = {
     create(req, res) {
@@ -176,20 +176,20 @@ module.exports = {
 
     quote(req, res) {
         return Travel.findByPk(req.params.travelId)
-        .then(travel =>{
-            travel.quote().then(travelPrice => {
-                travel.update({
-                    price: travelPrice
-                })
-                .then((travel) => res.status(200).send({quote: travelPrice}))
-                .catch(error => res.stauts(400).send(error.message));
-            });
-        })
-        .catch(error => res.status(400).send(error));
+            .then(travel => {
+                travel.quote().then(travelPrice => {
+                    travel.update({
+                            price: travelPrice
+                        })
+                        .then((travel) => res.status(200).send({ quote: travelPrice }))
+                        .catch(error => res.stauts(400).send(error.message));
+                });
+            })
+            .catch(error => res.status(400).send(error));
     },
 
     simulateQuote(req, res) {
-        console.log(req.body);
+        console.log("DATA: " + JSON.stringify(req.body));
         var travel = Travel.build({
             status: 'quoted',
             smallPetQuantity: req.body.smallPetQuantity,
@@ -201,29 +201,29 @@ module.exports = {
         });
 
         Address.create({
-            latitude: req.body.from.latitude,
-            longitude: req.body.from.longitude
-        })
-        .then(from => {
-            Address.create({
-                latitude: req.body.to.latitude,
-                longitude: req.body.to.longitude
+                latitude: req.body.from.latitude,
+                longitude: req.body.from.longitude
             })
-            .then(to => {
-                travel.from = from;
-                travel.to = to;
-                travel.fromId = from.id;
-                travel.toId = to.id;
-                travel.quote().then(travelPrice => {
-                    travel.price = Math.round(travelPrice);
-                    travel.save()
-                    .then(travel => res.status(200).send(travel))
-                    .catch(error => res.status(400).send(error.message));
-                }).catch(error => res.status(400).send(error.message));
+            .then(from => {
+                Address.create({
+                        latitude: req.body.to.latitude,
+                        longitude: req.body.to.longitude
+                    })
+                    .then(to => {
+                        travel.from = from;
+                        travel.to = to;
+                        travel.fromId = from.id;
+                        travel.toId = to.id;
+                        travel.quote().then(travelPrice => {
+                            travel.price = Math.round(travelPrice);;
+                            travel.save()
+                                .then(travel => res.status(200).send(travel))
+                                .catch(error => res.status(500).send(error));
+                        }).catch(error => res.status(500).send(error));
+                    })
+                    .catch(error => res.status(500).send(error));
             })
-            .catch(error => res.status(400).send(error.message));
-        })
-        .catch(error => res.status(400).send(error.message));
+            .catch(error => res.status(500).send(error));
     },
 
     confirmation(req, res) {
@@ -241,7 +241,7 @@ module.exports = {
             /***
              * Este comentario es sólo para mockear
              */
-            managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelID)
+            managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
                 .then((value) => {
                     console.log("respuesta de manager: " + value);
                     res.status(200).send({ status: 200, message: "su chofer está en camino" });
@@ -256,11 +256,15 @@ module.exports = {
             //if travel is rejected
             if (!aTravelConfirmationRequestDTO.accept) {
                 console.log("------------------ travel is rejected ------------------");
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelID, false);
+                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, false);
+                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= false;
+                console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
                 res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
             } else {
                 //travel is accepted
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelID, true);
+                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, true);
+                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= true;
+                console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
                 console.log("------------------ travel is accepted ------------------");
                 /**
                  * HARCODEOOOOOO
@@ -283,14 +287,14 @@ module.exports = {
                 } else {
                     console.info("Available User");
                     // logica de mandar el emit al chofer
-                    //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelID);
+                    //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelId);
                     try {
-                        //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelID);
+                        //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelId);
                         //aTravel.driverID = aTravelConfirmationRequestDTO.id;
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                        aTravelConfirmationResponseDTO.travelID = /*aTravel.travelID;*/ "0";
+                        aTravelConfirmationResponseDTO.travelId = /*aTravel.travelId;*/ "0";
                         aTravelConfirmationResponseDTO.time = /*Math.round(aTravel.time);*/ "123";
-                        aTravelConfirmationResponseDTO.driver = /*travelService.findDriver(aTravel.driverID);*/ "123";
+                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(1);
 
                         console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
 
@@ -299,8 +303,8 @@ module.exports = {
                         console.log("Se mandó al usuario ");
 
                         aTravelConfirmationResponseDTO.driver = null;
-                        aTravelConfirmationResponseDTO.user = /*travelService.findUser(aTravel.userID);*/ "123";
-                        aTravelConfirmationResponseDTO
+                        aTravelConfirmationResponseDTO.user = travelService.findUser(1);
+
                         res.status(200).send(aTravelConfirmationResponseDTO);
                     } catch (error) {
                         res.status(500).send(error);
@@ -315,51 +319,59 @@ module.exports = {
     */
     finalize(req, res) {
         try {
-            var aTravelFinalizeRequestDTO = new travelDTO.TravelFinalizeRequestDTO(req.body);
-            var connectionUsers = allSockets.connectionUsers;
-            var aConnectionUser = null;
-            try {
-                if (connectionUsers != undefined && connectionUsers.has(aTravelFinalizeRequestDTO.id)) {
-                    aConnectionUser = connectionUsers.get(aTravelFinalizeRequestDTO.id)
-                }
-            } catch (err) {
-                console.error(err);
-            }
-            if (aConnectionUser == null || aConnectionUser == undefined) {
-                console.error("There are no Users");
-                return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
-            } else {
-                console.info("Available User");
-                Travel
-                    .findByPk(aTravelFinalizeRequestDTO.travelId)
-                    .then(travel => {
+            console.log("finalize body: " + JSON.stringify(req.body));
+
+            Travel
+                .findByPk(req.body.travelId)
+                .then(travel => {
+                    if (travel != null) {
                         Travel.update({ "status": TRAVEL_COMPLETED }, { where: { "id": travel.id } })
                             .then(travel => {
-                                console.log("Travel update right");
-                                aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
-                                return res.status(200).send(JSON.stringify({ status: 200, message: "Finalized ok" }));
+                                var connectionUsers = allSockets.connectionUsers;
+                                var aConnectionUser = null;
+                                try {
+                                    if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
+                                        aConnectionUser = connectionUsers.get(travel.userId)
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                                if (aConnectionUser == null || aConnectionUser == undefined) {
+                                    console.error("There are no Users");
+                                    return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
+                                } else {
+                                    console.info("Available User");
+                                    console.log("Travel update right");
+                                    aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
+                                    return res.status(200).send(JSON.stringify({ status: 200, message: "Finalized ok" }));
+                                }
                             })
                             .catch(error => { throw error });
-                    })
-                    .catch(error => { throw error });
-            }
-        } catch (error) {
-            console.error(error);
-            res.status(500).send(error);
+                    } else {
+                        return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
+                    }
+                })
+                .catch(error => { throw error });
+
+        } catch (e) {
+            console.error(e);
+            return res.status(500).send(e);
         }
     },
 
     cancel(req, res) {
         try {
+            console.log("cancel body: " + JSON.stringify(req.body));
             var aTravelCancelRequestDTO = new travelDTO.TravelCancelRequestDTO(req.body);
             var connectionUsers = allSockets.connectionUsers;
             var connectionDrivers = allSockets.connectionDrivers;
             var aConnectionUser = null;
             var aConnectionDriver = null;
-            if (aTravelCancelRequestDTO.role == 'user') {
+            if (aTravelCancelRequestDTO.role == 'USER') {
                 try {
                     if (connectionDrivers != undefined && connectionDrivers.has(aTravelCancelRequestDTO.id)) {
-                        aConnectionDriver = connectionDrivers.get(aTravelCancelRequestDTO.id)
+                        aConnectionDriver = connectionDrivers.values().next().value;
+                        //aConnectionDriver = connectionDrivers.get(aTravelCancelRequestDTO.id)
                     }
                 } catch (err) {
                     console.error(err);
@@ -382,9 +394,10 @@ module.exports = {
                         })
                         .catch(error => { throw error });
                 }
-            } else if (aTravelCancelRequestDTO.role == 'driver') {
+            } else if (aTravelCancelRequestDTO.role == 'DRIVER') {
                 try {
                     if (connectionUsers != undefined && connectionUsers.has(aTravelCancelRequestDTO.id)) {
+                        //aConnectionUser = aConnectionUser.values().next().value;
                         aConnectionUser = connectionUsers.get(aTravelCancelRequestDTO.id)
                     }
                 } catch (err) {

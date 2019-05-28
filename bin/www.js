@@ -17,22 +17,20 @@ var connectionUsers = new Map();
 var connectionDrivers = new Map();
 var connectionDelete = new Map();
 var positionDrivers = new Map();
-var userID = 0;
-var driverID = 0;
 
 io.on('connection', (socket) => {
-    socket.on('ROL', function(rol) {
+    socket.on('ROL', function(rol, id) {
         if (rol == "USER") {
-            userID = global.incrementID(userID);
+            var userID = id;
             console.info("User id " + userID + ", is connected " + socket.id);
             var connection = new connectionModel.ConnectionInfo(userID, rol, socket);
-            connectionUsers.set(socket.id, connection);
+            connectionUsers.set(userID, connection);
             exports.connectionUsers = connectionUsers;
         } else {
-            driverID = global.incrementID(driverID);
+            var driverID = id;
             console.info("Driver id " + driverID + ", is connected " + socket.id);
             var connection = new connectionModel.ConnectionInfo(driverID, rol, socket);
-            connectionDrivers.set(socket.id, connection);
+            connectionDrivers.set(driverID, connection);
             exports.connectionDrivers = connectionDrivers;
 
             //adding driver to save his position for algorithm find driver for travel

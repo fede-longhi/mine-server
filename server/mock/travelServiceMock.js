@@ -8,7 +8,7 @@ var travelModel = require("../dtos/model/travel"),
     haversine = require('haversine');
 
 var travels = new Map();
-var travelID = 0;
+var travelId = 0;
 
 module.exports = {
     /*findTravelById : function findTravelById(id) {
@@ -28,7 +28,7 @@ module.exports = {
         return driver;
     },
     
-    /*findUser : function findUser(userID) {
+    findUser : function findUser(userID) {
         console.info("travelServiceMock: findUser");
         var user = partyService.findAllUsers().find(function(user) {
             return user.id == userID;
@@ -36,10 +36,10 @@ module.exports = {
         return user;
     },
     
-    createATravel : function createATravel(driverSearchDTO) {
+    /*createATravel : function createATravel(driverSearchDTO) {
         console.info("travelServiceMock: createATravel");
-        travelID = global.incrementID(travelID);
-        var aTravel = new travelModel.Travel(travelID, driverSearchDTO.from, driverSearchDTO.to);
+        travelId = global.incrementID(travelId);
+        var aTravel = new travelModel.Travel(travelId, driverSearchDTO.from, driverSearchDTO.to);
         aTravel.petAmountSmall = driverSearchDTO.petAmountSmall;
         aTravel.petAmountMedium = driverSearchDTO.petAmountMedium;
         aTravel.petAmountLarge = driverSearchDTO.petAmountLarge;
@@ -71,33 +71,33 @@ module.exports = {
         
         var cotizatedStatus = travelModel.getAllStates().get(1);
         aTravel.states.push(cotizatedStatus);
-        if (!travels.has(travelID)) {
-            travels.set(travelID, aTravel);
+        if (!travels.has(travelId)) {
+            travels.set(travelId, aTravel);
         }
         return aTravel;
     },
     
-    findTravelByTravelID : function findTravelByTravelID(travelID) {
-        console.info("travelServiceMock :" + "findTravelByTravelID. travelID : " + travelID);
+    findTravelByTravelID : function findTravelByTravelID(travelId) {
+        console.info("travelServiceMock :" + "findTravelByTravelID. travelId : " + travelId);
         var aTravel = null;
-        if (travels.has(travelID)) {
-            aTravel = travels.get(travelID);
+        if (travels.has(travelId)) {
+            aTravel = travels.get(travelId);
         }
         return aTravel;
     },
     
-    confirmTravel : function confirmTravel(travelID) {
+    confirmTravel : function confirmTravel(travelId) {
         // logica de mandar el emit al chofer
-        console.info("travelServiceMock :" + "confirmTravel. travelID : " + travelID);
-        var aTravel = this.findTravelByTravelID(travelID)
+        console.info("travelServiceMock :" + "confirmTravel. travelId : " + travelId);
+        var aTravel = this.findTravelByTravelID(travelId)
         var driverConfirmatedStatus = travelModel.getAllStates().get(3);
         aTravel.states.push(driverConfirmatedStatus);
         return aTravel;
     },
 
-    finalizeTravel : function finalizeTravel(travelID) {
-        console.info("travelServiceMock :" + "finalizeTravel. travelID : " + travelID);
-        var aTravel = this.findTravelByTravelID(travelID)
+    finalizeTravel : function finalizeTravel(travelId) {
+        console.info("travelServiceMock :" + "finalizeTravel. travelId : " + travelId);
+        var aTravel = this.findTravelByTravelID(travelId)
         if (aTravel != null) {
             var finalizeStatus = travelModel.getAllStates().get(4);
             aTravel.states.push(finalizeStatus);
