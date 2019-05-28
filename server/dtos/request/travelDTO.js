@@ -25,8 +25,8 @@ exports.TravelConfirmationRequestDTO = class TravelConfirmationRequestDTO {
             if (arg.has('travelId')) {
                 this.travelId = arg.get('travelId');
             }
-            if (arg.has('rol')) {
-                this.rol = arg.get('rol');
+            if (arg.has('role')) {
+                this.role = arg.get('role');
             }
             if (arg.has('id')) {
                 this.id = arg.get('id');
@@ -36,7 +36,7 @@ exports.TravelConfirmationRequestDTO = class TravelConfirmationRequestDTO {
             }
         } else {
             this.travelId = arg.travelId;
-            this.rol = arg.rol;
+            this.role = arg.role;
             this.id = arg.id;
             this.accept = arg.accept;
         }

@@ -9,6 +9,19 @@ var travelResource = require("../controllers/travels");
 
 var travelService = require("../mock/travelServiceMock");
 
+
+var responseOfDriverToTravels = new Map();
+
+function addResponse(idDriver,response){
+    try{
+        responseOfDriverToTravels.set(idDriver,response);
+        return 0;
+    }catch(error){
+        console.log("error in response driver storage: "+ error);
+        return -1;
+    }
+}
+
 /*function manageTravelRequest(travelId){
 //the user has solicited a travel
 //executed thread
@@ -56,7 +69,7 @@ function manageTravelRequest(travelId){
         var REJECT_TIMEOUT = 2;
         var REJECT_DRIVER_NO_FOUND = 3;
         var RESOLVE_DRIVER_ACCEPT = 4;
-        var responseOfDriverToTravels = travelResource.responseOfDriverToTravels;
+        //var responseOfDriverToTravels = travelResource.responseOfDriverToTravels;
     
         function bucleFunction(indexRadius,amountDriversNotified){
             
@@ -88,7 +101,11 @@ function manageTravelRequest(travelId){
                     try {
                         if (connectionDrivers != undefined) {
                             //TODO: obtener el socket del chofer y no cualquiera
+                            console.log("tamaño del map de sockets drivers: "+connectionDrivers.size)
                             aConnectionDriver = connectionDrivers.values().next().value;
+                            if(aConnectionDriver == null){
+                                console.log("#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$");
+                            }
                         }else{
                             console.error("Problema un para conectarse con el chofer");
                             rejectBucle(REJECT_ERROR);
@@ -147,7 +164,7 @@ function manageTravelRequest(travelId){
                                 //amountDriversNotified++;
         
                                 //map donde se almacenan las respuestas de los choferes
-                                var responseOfDriverToTravels = travelResource.responseOfDriverToTravels;
+                                //var responseOfDriverToTravels = travelResource.responseOfDriverToTravels;
         
                                 console.log("Esperando la respuesta del chofer....");
         
@@ -267,7 +284,11 @@ function manageTravelRequest(travelId){
         bucleFunction(indexRadius,++amountDriversNotified)
         .then((value)=>{
             console.log("<<<<<<<<< saliendo de la búsqueda del chofer y se acepto el viaje");
-            resolve(value);
+            //actualizar el viaje asociando al chofer
+            /*Travel
+            .findByPk(travelId)
+            .then(travel => {
+            resolve(value);*/
         })
         .catch((value)=>{
             if(value == REJECT_ERROR){
@@ -389,5 +410,6 @@ function findBestDriver(travelId, searchRadius, excludedDrivers){
 }
 
 module.exports = {
-    manageTravelRequest: manageTravelRequest
+    manageTravelRequest: manageTravelRequest,
+    addResponse:addResponse,
 }

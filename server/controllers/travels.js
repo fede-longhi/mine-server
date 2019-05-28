@@ -4,7 +4,7 @@ const Address = require('../models').Address;
 /**
  * contains all sockets of all users and drivers
  */
-allSockets = require("../../bin/www");
+var allSockets = require("../../bin/www");
 const TRAVEL_COMPLETED = "completed";
 const TRAVEL_CANCELED_BY_USER = "canceled by user";
 const TRAVEL_CANCELED_BY_DRIVER = "canceled by driver";
@@ -20,8 +20,8 @@ var managerTravelRequest = require('./travelRequestManagerService');
  * map when storage response of the drivers
  * contain <idTravel,boolean>
  */
-responseOfDriverToTravels = new Map();
-exports.responseOfDriverToTravels = responseOfDriverToTravels;
+/*responseOfDriverToTravels = new Map();
+exports.responseOfDriverToTravels = responseOfDriverToTravels;*/
 
 /**
  * is reemplace for a service that found travels, users, drivers
@@ -232,13 +232,17 @@ module.exports = {
     },
 
     confirmation(req, res) {
+        console.info("===========> Llega una confirmación <===============");
         console.info("TravelResource :" + JSON.stringify(req.body));
         var aTravelConfirmationRequestDTO = new travelDTO.TravelConfirmationRequestDTO(req.body);
         console.log("####message confirmation###: " + JSON.stringify(aTravelConfirmationRequestDTO));
         var connectionUsers = allSockets.connectionUsers;
         var connectionDrivers = allSockets.connectionDrivers;
         var aConnectionDriver = null;
-        if (aTravelConfirmationRequestDTO.rol == "USER") {
+        var statusTravel = "NaN";
+        var statusAceppted = "ACCEPTED";
+        var statusRejected = "REJECTED";
+        if (aTravelConfirmationRequestDTO.role == "user") {
 
             console.log("----solicitud de viaje----");
             //res.status(200).send({status:200, message: "su chofer está en camino"});
@@ -249,73 +253,80 @@ module.exports = {
             managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
                 .then((value) => {
                     console.log("respuesta de manager: " + value);
+                    statusTravel = statusAceppted;
                     res.status(200).send({ status: 200, message: "su chofer está en camino" });
                 })
                 .catch((value) => {
                     console.log("respuesta de manager: " + value);
+                    statusTravel = statusRejected;
                     res.status(400).send({ status: 400, message: "No hay choferes en este momento" });
                 })
         }
         var aConnectionUser = null;
-        if (aTravelConfirmationRequestDTO.rol == "DRIVER") {
+        if (aTravelConfirmationRequestDTO.role == "driver") {
             //if travel is rejected
             if (!aTravelConfirmationRequestDTO.accept) {
-                console.log("------------------ travel is rejected ------------------");
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, false);
-                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= false;
+                console.log("-----------------_ travel is rejected ------------------");
+                //responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, false);
+                managerTravelRequest.addResponse(aTravelConfirmationRequestDTO.travelId, false);
                 console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
-                res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
+                //res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
             } else {
                 //travel is accepted
-                responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, true);
-                //responseOfDriverToTravels[parseInt(aTravelConfirmationRequestDTO.travelId)]= true;
-                console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
                 console.log("------------------ travel is accepted ------------------");
-                /**
-                 * HARCODEOOOOOO
-                 * para probar desde postman
-                 */
-                //res.status(200).send({status:200, message:"viaje aceptado correctamente"});
-
-                //notify to user
-                try {
-                    if (connectionUsers != undefined) {
-                        aConnectionUser = connectionUsers.values().next().value;
-                    }
-                } catch (err) {
-                    console.error(err);
-                    res.status(400).send({ status: 400, message: "error inesperado" });
-                }
-                if (aConnectionUser == null || aConnectionUser == undefined) {
-                    console.error("There are no Users");
-                    res.status(204).send({ status: 204, message: "There are not Users" });
-                } else {
-                    console.info("Available User");
-                    // logica de mandar el emit al chofer
-                    //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelId);
-                    try {
-                        //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelId);
-                        //aTravel.driverID = aTravelConfirmationRequestDTO.id;
-                        var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                        aTravelConfirmationResponseDTO.travelId = /*aTravel.travelId;*/ "0";
-                        aTravelConfirmationResponseDTO.time = /*Math.round(aTravel.time);*/ "123";
-                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(1);
-
-                        console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
-
-                        aConnectionUser.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelConfirmationResponseDTO);
-
-                        console.log("Se mandó al usuario ");
-
-                        aTravelConfirmationResponseDTO.driver = null;
-                        aTravelConfirmationResponseDTO.user = travelService.findUser(1);
-
-                        res.status(200).send(aTravelConfirmationResponseDTO);
-                    } catch (error) {
-                        res.status(500).send(error);
-                    }
-                }
+                //responseOfDriverToTravels.set(aTravelConfirmationRequestDTO.travelId, true);
+                managerTravelRequest.addResponse(aTravelConfirmationRequestDTO.travelId, true);
+                //console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
             }
+
+            //if(statusTravel === statusRejected){
+
+            //}else if (statusTravel === statusAceppted){
+                //hay que encontrar el travel y el driver asociado para mandarlo.
+                /*Travel
+                .findByPk(aTravelConfirmationRequestDTO.travelId)
+                .then(travel => {*/
+                    try {
+                        if (connectionUsers != undefined) {
+                            aConnectionUser = connectionUsers.values().next().value;
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        res.status(400).send({ status: 400, message: "error inesperado" });
+                    }
+                    if (aConnectionUser == null || aConnectionUser == undefined) {
+                        console.error("There are no Users");
+                        res.status(204).send({ status: 204, message: "There are not Users" });
+                    } else {
+                        console.info("Available User");
+                        // logica de mandar el emit al chofer
+                        //var aTravel = travelService.findTravelByTravelID(aTravelConfirmationRequestDTO.travelId);
+                        try {
+                            //var aTravel = travelService.confirmTravel(aTravelConfirmationRequestDTO.travelId);
+                            //aTravel.driverID = aTravelConfirmationRequestDTO.id;
+                            var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
+                            aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
+                            aTravelConfirmationResponseDTO.time = /*Math.round(aTravel.time);*/ "123";
+                            aTravelConfirmationResponseDTO.driver = travelService.findDriver(1);
+    
+                            console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
+    
+                            aConnectionUser.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelConfirmationResponseDTO);
+    
+                            console.log("Se mandó al usuario ");
+    
+                            aTravelConfirmationResponseDTO.driver = null;
+                            aTravelConfirmationResponseDTO.user = travelService.findUser(1);
+    
+                            res.status(200).send(aTravelConfirmationResponseDTO);
+                        } catch (error) {
+                            res.status(500).send(error);
+                        }
+                    }
+                /*})
+                .catch(error => res.status(400).send(error));*/
+
+            //}
         }
     },
 
@@ -366,6 +377,7 @@ module.exports = {
 
     cancel(req, res) {
         try {
+            console.log("///////////CANCEL////: "+req.body);
             console.log("cancel body: " + JSON.stringify(req.body));
             var aTravelCancelRequestDTO = new travelDTO.TravelCancelRequestDTO(req.body);
             var connectionUsers = allSockets.connectionUsers;
@@ -374,7 +386,8 @@ module.exports = {
             var aConnectionDriver = null;
             if (aTravelCancelRequestDTO.role == 'USER') {
                 try {
-                    if (connectionDrivers != undefined && connectionDrivers.has(aTravelCancelRequestDTO.id)) {
+                    if (connectionDrivers != undefined /*&& connectionDrivers.has(aTravelCancelRequestDTO.id)*/) {
+                        console.log("tamaño del map de sockets drivers: "+connectionDrivers.size)
                         aConnectionDriver = connectionDrivers.values().next().value;
                         //aConnectionDriver = connectionDrivers.get(aTravelCancelRequestDTO.id)
                     }
@@ -383,7 +396,7 @@ module.exports = {
                 }
                 if (aConnectionDriver == null || aConnectionDriver == undefined) {
                     console.error("There are no Drivers");
-                    return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Drivers" }));
+                    return res.status(203).send({ status: 203, message: "There are not Drivers" });
                 } else {
                     console.info("Available Driver");
                     Travel
@@ -393,7 +406,7 @@ module.exports = {
                                 .then(travel => {
                                     console.log("Travel update right");
                                     aConnectionDriver.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by User ok" });
-                                    return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by User ok" }));
+                                    return res.status(200).send({ status: 200, message: "Canceled by User ok" });
                                 })
                                 .catch(error => { throw error });
                         })
@@ -401,16 +414,16 @@ module.exports = {
                 }
             } else if (aTravelCancelRequestDTO.role == 'DRIVER') {
                 try {
-                    if (connectionUsers != undefined && connectionUsers.has(aTravelCancelRequestDTO.id)) {
-                        //aConnectionUser = aConnectionUser.values().next().value;
-                        aConnectionUser = connectionUsers.get(aTravelCancelRequestDTO.id)
+                    if (connectionUsers != undefined /*&& connectionUsers.has(aTravelCancelRequestDTO.id)*/) {
+                        aConnectionUser = connectionUsers.values().next().value;
+                        //aConnectionUser = connectionUsers.get(aTravelCancelRequestDTO.id)
                     }
                 } catch (err) {
                     console.error(err);
                 }
                 if (aConnectionUser == null || aConnectionUser == undefined) {
                     console.error("There are no Users");
-                    return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
+                    return res.status(203).send({ status: 203, message: "There are not Users" });
                 } else {
                     console.info("Available User");
                     Travel
@@ -419,7 +432,8 @@ module.exports = {
                             Travel.update({ "status": TRAVEL_CANCELED_BY_DRIVER }, { where: { "id": travel.id } })
                             console.log("Travel update right");
                             aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
-                            DriverScore
+                            return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });                            
+                            /*DriverScore
                                 .create({
                                     fromId: travel.userId,
                                     toId: travel.driverId,
@@ -436,17 +450,17 @@ module.exports = {
                                                 totalScore: newTotalScore,
                                                 scoreQuantity: newScoreQuantity
                                             })
-                                            return res.status(200).send(JSON.stringify({ status: 200, message: "Canceled by Driver ok" }));
+                                            return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });
                                         })
                                         .catch(error => { throw error });
                                 })
-                                .catch(error => { throw error });
+                                .catch(error => { throw error });*/
 
                         })
                         .catch(error => { throw error });
                 }
             } else {
-                return res.status(412).send({ status: 412, message: "Precondition failed" });
+                return res.status(412).send(new Error("Precondition failed"));
             }
         } catch (error) {
             console.error(error);
