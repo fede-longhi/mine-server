@@ -20,6 +20,9 @@ module.exports = {
             scoreQuantity: {
                 type: Sequelize.INTEGER
             },
+            travelAmount: {
+                type: Sequelize.INTEGER
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
