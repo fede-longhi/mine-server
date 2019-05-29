@@ -2,11 +2,12 @@
 //require('console-error');
 var party = require("../../dtos/request/partyDTO");
 var travel = require("../../dtos/model/travel");
+const Driver = require("../../models").Driver;
 
 var drivers = null;
 var users = null;
 
-exports.findAllDrivers = function findAllDrivers(){
+exports.findAllDrivers = function findAllDrivers() {
     console.info("partyServiceMock: findAllDrivers");
     if (drivers == null) {
         var driver1 = new party.DriverDTO();
@@ -44,7 +45,7 @@ exports.findAllDrivers = function findAllDrivers(){
     return drivers;
 };
 
-var allDrivers =  new Map();
+var allDrivers = new Map();
 //var geo = new travel.GeographicCoordenate({latitude:-34.6986,longitude:-58.49});
 /*var geo = new travel.GeographicCoordenate({latitude:-34.69,longitude:-58.4301});
 allDrivers.set(1,geo);
@@ -64,18 +65,29 @@ geo = new travel.GeographicCoordenate({latitude:-54.3,longitude:-58});
 allDrivers.set(3,geo);
 console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
 
-var geo = new travel.GeographicCoordenate({latitude:-34.689,longitude:-58.4345});
-allDrivers.set(1,geo);
-geo = new travel.GeographicCoordenate({latitude:-34.691,longitude:-58.4345});
-allDrivers.set(2,geo);
-geo = new travel.GeographicCoordenate({latitude:-34.690,longitude:-58.4345});
-allDrivers.set(3,geo);
-console.log("cantidad de elementos mock pos: "+allDrivers.size);
+
+/*
+    Agregar 3 choferes reales de la DB.
+*/
+
+Driver
+    .findAll()
+    .then(drivers => {
+        var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
+        allDrivers.set(drivers[0].id, geo);
+        geo = new travel.GeographicCoordenate({ latitude: -34.691, longitude: -58.4345 });
+        allDrivers.set(drivers[1].id, geo);
+        geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
+        allDrivers.set(drivers[2].id, geo);
+        console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
+        console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
+
+        exports.allDriversMock = allDrivers;
+    })
+    .catch((error) => res.status(400).send(error));
 
 
-exports.allDriversMock = allDrivers;
-
-exports.findAllUsers = function findAllUsers(){
+exports.findAllUsers = function findAllUsers() {
     console.info("partyServiceMock: findAllUsers");
     if (users == null) {
         var user1 = new party.UserDTO();

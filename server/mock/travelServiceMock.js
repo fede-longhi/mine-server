@@ -19,23 +19,23 @@ module.exports = {
         }
         return aTravel;
     },*/
-    
-    findDriver : function findDriver(driverID) {
+
+    findDriver: function findDriver(driverID) {
         console.info("travelServiceMock: findDriver " + driverID);
         var driver = partyService.findAllDrivers().find(function(driver) {
             return driver.id == driverID;
-        }); 
+        });
         return driver;
     },
-    
-    findUser : function findUser(userID) {
+
+    findUser: function findUser(userID) {
         console.info("travelServiceMock: findUser");
         var user = partyService.findAllUsers().find(function(user) {
             return user.id == userID;
-        }); 
+        });
         return user;
     },
-    
+
     /*createATravel : function createATravel(driverSearchDTO) {
         console.info("travelServiceMock: createATravel");
         travelId = global.incrementID(travelId);
