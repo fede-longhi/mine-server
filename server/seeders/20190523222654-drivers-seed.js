@@ -24,6 +24,17 @@ module.exports = {
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
+            {
+                id: '987654399',
+                status: "available",
+                licenseNumber: "123",
+                totalScore: 45,
+                scoreQuantity: 10,
+                partyId: 1,
+                travelAmount: 15,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
 
         ]);
     },

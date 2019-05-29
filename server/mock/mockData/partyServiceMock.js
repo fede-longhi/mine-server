@@ -83,7 +83,7 @@ Driver
 
         exports.allDriversMock = allDrivers;
     })
-    .catch((error) => res.status(400).send(error));
+    .catch((error) => console.log(error));
 
 
 exports.findAllUsers = function findAllUsers() {
