@@ -239,7 +239,9 @@ module.exports = {
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
                         aTravelConfirmationResponseDTO.time = "123";
-                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(1);
+                        aTravelConfirmationResponseDTO.driver = travelService.findDriver("987654322");
+                        aTravelConfirmationResponseDTO.user = travelService.findUser("123456782");
+
                         console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
                         res.status(200).send(aTravelConfirmationResponseDTO);
                     } catch (error) {
@@ -265,8 +267,9 @@ module.exports = {
                 var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                 aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
                 aTravelConfirmationResponseDTO.time = "123";
-                aTravelConfirmationResponseDTO.driver = null;
-                aTravelConfirmationResponseDTO.user = travelService.findUser(1);
+                aTravelConfirmationResponseDTO.user = travelService.findUser("123456782");
+                aTravelConfirmationResponseDTO.driver = travelService.findDriver("987654322");
+
                 res.status(200).send(aTravelConfirmationResponseDTO);
             }
         }
