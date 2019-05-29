@@ -9,6 +9,7 @@ module.exports = {
                 totalScore: 50,
                 scoreQuantity: 10,
                 partyId: 3,
+                travelAmount: 12,
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -19,6 +20,7 @@ module.exports = {
                 totalScore: 45,
                 scoreQuantity: 10,
                 partyId: 6,
+                travelAmount: 15,
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
