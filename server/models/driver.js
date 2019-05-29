@@ -5,7 +5,10 @@ module.exports = (sequelize, DataTypes) => {
     licenseNumber: DataTypes.STRING,
     totalScore: DataTypes.DOUBLE,
     scoreQuantity: DataTypes.INTEGER,
-    travelAmount: DataTypes.INTEGER
+    travelAmount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    }
   }, {});
 
   Driver.associate = function(models) {
