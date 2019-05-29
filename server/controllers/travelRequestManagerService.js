@@ -287,8 +287,8 @@ function manageTravelRequest(travelId){
             //actualizar el viaje asociando al chofer
             /*Travel
             .findByPk(travelId)
-            .then(travel => {
-            resolve(value);*/
+            .then(travel => {*/
+            resolve(value);
         })
         .catch((value)=>{
             if(value == REJECT_ERROR){
