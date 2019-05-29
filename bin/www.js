@@ -39,6 +39,20 @@ io.on('connection', (socket) => {
         socket.emit("ROL_RESPONSE", connection.id);
     });
 
+    socket.on('FIN ROL', function(rol, id) {
+        if (rol == "USER") {
+            var aConnection = connectionUsers.get(id);
+            console.info("User id " + id + " has left : " + aConnection.socket.id);
+            connectionDelete.set(id, aConnection);
+            connectionUsers.delete(id);
+        } else {
+            var aConnection = connectionDrivers.get(id);
+            console.info("Driver id " + id + " has left : " + aConnection.socket.id);
+            connectionDelete.set(id, aConnection);
+            connectionDrivers.delete(id);
+        }
+    });
+
     socket.on('disconnect', () => {
         if (connectionUsers.has(socket.id)) {
             var aConnection = connectionUsers.get(socket.id);
@@ -50,13 +64,10 @@ io.on('connection', (socket) => {
             var aConnection = connectionDrivers.get(socket.id);
             console.info("Driver id " + aConnection.id + " has left : " + socket.id);
             connectionDrivers.delete(socket.id);
-
-            //delete driver for algorithm find driver for travel
-            //var connection = connectionDrivers.get(socket.id);
-            //positionDrivers.delete(connection.id);
         }
         socket.disconnect(true);
     });
+
     socket.emit("message", {
         id: 1,
         text: "i'm a message",
