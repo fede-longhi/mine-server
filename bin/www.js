@@ -42,13 +42,17 @@ io.on('connection', (socket) => {
     socket.on('FIN ROL', function(rol, id) {
         if (rol == "USER") {
             var aConnection = connectionUsers.get(id);
-            console.info("User id " + id + " has left : " + aConnection.socket.id);
-            connectionDelete.set(id, aConnection);
+            if (aConnection != null && aConnection != undefined) {
+                console.info("User id " + id + " has left : " + aConnection.socket.id);
+                connectionDelete.set(id, aConnection);
+            }
             connectionUsers.delete(id);
         } else {
             var aConnection = connectionDrivers.get(id);
-            console.info("Driver id " + id + " has left : " + aConnection.socket.id);
-            connectionDelete.set(id, aConnection);
+            if (aConnection != null && aConnection != undefined) {
+                console.info("Driver id " + id + " has left : " + aConnection.socket.id);
+                connectionDelete.set(id, aConnection);
+            }
             connectionDrivers.delete(id);
         }
     });
