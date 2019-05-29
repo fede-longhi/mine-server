@@ -284,7 +284,8 @@ function manageTravelRequest(travelId){
         bucleFunction(indexRadius,++amountDriversNotified)
         .then((value)=>{
             console.log("<<<<<<<<< saliendo de la búsqueda del chofer y se acepto el viaje");
-            //actualizar el viaje asociando al chofer
+            //actualizar el viaje asociando al chofer que se encuentra en 
+            // aDriverSelected
             /*Travel
             .findByPk(travelId)
             .then(travel => {*/
