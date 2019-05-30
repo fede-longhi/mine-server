@@ -20,7 +20,7 @@ exports.findAllDrivers = function findAllDrivers() {
         driver1.prioriry = "4.5";
         driver1.amountTravels = "20";
         var driver2 = new party.DriverDTO();
-        driver2.id = "2";
+        driver2.id = "987654321";
         driver2.name = "Juan Manuel";
         driver2.lastName = "Fangio";
         driver2.license = "999999992";
@@ -29,7 +29,7 @@ exports.findAllDrivers = function findAllDrivers() {
         driver2.prioriry = "4.7";
         driver2.amountTravels = "50";
         var driver3 = new party.DriverDTO();
-        driver3.id = "3";
+        driver3.id = "987654399";
         driver3.name = "Lewis";
         driver3.lastName = "Hamilton";
         driver3.license = "999999993";
@@ -73,11 +73,11 @@ Driver
     .findAll()
     .then(drivers => {
         var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
-        allDrivers.set(drivers[0].id, geo);
+        allDrivers.set(drivers[2].id, geo);
         geo = new travel.GeographicCoordenate({ latitude: -34.691, longitude: -58.4345 });
         allDrivers.set(drivers[1].id, geo);
         geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
-        allDrivers.set(drivers[2].id, geo);
+        allDrivers.set(drivers[0].id, geo);
         console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
         console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
 
