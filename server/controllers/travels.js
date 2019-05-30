@@ -255,10 +255,11 @@ module.exports = {
         }
         if (aTravelConfirmationRequestDTO.role == "driver") {
             //if travel is rejected
+            console.log(JSON.stringify(aTravelConfirmationRequestDTO));
+
             if (!aTravelConfirmationRequestDTO.accept) {
                 console.log("-----------------_ travel is rejected ------------------");
                 managerTravelRequest.addResponse(aTravelConfirmationRequestDTO.travelId, false);
-                console.log("responses DRIVER endpoint: " + JSON.stringify(responseOfDriverToTravels));
                 res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
             } else {
                 //travel is accepted
