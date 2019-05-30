@@ -69,7 +69,17 @@ module.exports = {
 
     retrieve(req, res) {
         return Travel
-            .findByPk(req.params.travelId)
+            .findByPk(req.params.travelId, {
+                include: [{
+                        model: Address,
+                        as: 'from'
+                    },
+                    {
+                        model: Address,
+                        as: 'to'
+                    }
+                ]
+            })
             .then(travel => {
                 if (!travel) {
                     return res.status(404).send({
@@ -106,27 +116,6 @@ module.exports = {
                     .then(travel => res.status(201).send(travel))
                     .catch(error => res.status(400).send(error.message));
             })
-    },
-
-    // list(req, res) {
-    //     return Travel
-    //         .findAll()
-    //         .then((travels) => res.status(200).send(travels))
-    //         .catch(error => res.status(400).send(error.message));
-    // },
-
-    retrieve(req, res) {
-        return Travel
-            .findByPk(req.params.travelId)
-            .then(travel => {
-                if (!travel) {
-                    return res.status(404).send({
-                        message: 'Travel Not Found',
-                    });
-                }
-                return res.status(200).send(travel);
-            })
-            .catch(error => res.status(400).send(error));
     },
 
     update(req, res) {
