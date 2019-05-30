@@ -4,7 +4,7 @@ var travelDTOModel = require("../dtos/request/travelDTO");
 var driversMock = require("../mock/mockData/partyServiceMock");
 const Travel = require('../models/').Travel;
 const Driver = require("../models").Driver;
-
+const Address = require("../models").Address;
 
 //to obtain the response of driver
 var travelResource = require("../controllers/travels");
@@ -128,7 +128,7 @@ function manageTravelRequest(travelId) {
 
                         // logica de mandar el emit al chofer
                         //var aTravel = travelService.findTravelById(travelId);
-
+                        console.log('travelID FindByPK : ' + travelId);
                         Travel
                             .findByPk(travelId, {
                                 include: [{
@@ -141,7 +141,7 @@ function manageTravelRequest(travelId) {
                                     }
                                 ]
                             })
-                            .then(travel => {
+                            .then(aTravel => {
 
                                 var aTravelMock = {
                                     "driverId": 0,
@@ -154,8 +154,6 @@ function manageTravelRequest(travelId) {
                                     "travelId": 20,
                                     "userId": 0
                                 }
-
-                                aTravel = travel;
 
                                 console.info("Datos del viaje: " + JSON.stringify(aTravel));
 
@@ -256,7 +254,10 @@ function manageTravelRequest(travelId) {
 
                                     });
                             })
-                            .catch(error => { throw error });
+                            .catch(error => {
+                                console.log(error);
+                                throw error;
+                            });
                     }
 
                 } else {
@@ -298,7 +299,7 @@ function manageTravelRequest(travelId) {
             .then((aDriver) => {
                 console.log("<<<<<<<<< saliendo de la búsqueda del chofer y se acepto el viaje");
                 //actualizar el viaje asociando al chofer
-                console.log(JSON.stringify(aDriver));
+                console.log(JSON.stringify(aDriver), "   travelID  " + travelId);
                 Travel
                     .findByPk(travelId, {
                         include: [{
@@ -313,18 +314,19 @@ function manageTravelRequest(travelId) {
                     })
                     .then(travel => {
                         Travel.update({ "driverId": aDriver.id }, { where: { "id": travel.id } });
-                    });
+                    })
+                    .catch(err => { console.log("EEEEEEEEEEEEEEE: " + err) });
                 resolve(0);
             })
-            .catch((value) => {
-                if (value == REJECT_ERROR) {
+            .catch((error) => {
+                if (error == REJECT_ERROR) {
                     console.log("<<<<<<<<< saliendo de la búsqueda por un error");
-                    reject(value);
-                } else if (value == REJECT_DRIVER_NO_FOUND) {
+                    reject(error);
+                } else if (error == REJECT_DRIVER_NO_FOUND) {
                     console.log("<<<<<<<<<< saliendo de la búsqueda porque no encontró chofer");
-                    reject(value);
+                    reject(error);
                 } else {
-                    console.log("<<<<<<<< saliendo por un error desconocido: " + value);
+                    console.log("<<<<<<<< saliendo por un error desconocido: " + error);
                 }
             })
     });
