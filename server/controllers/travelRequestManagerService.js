@@ -130,7 +130,17 @@ function manageTravelRequest(travelId) {
                         //var aTravel = travelService.findTravelById(travelId);
 
                         Travel
-                            .findByPk(travelId)
+                            .findByPk(travelId, {
+                                include: [{
+                                        model: Address,
+                                        as: 'from'
+                                    },
+                                    {
+                                        model: Address,
+                                        as: 'to'
+                                    }
+                                ]
+                            })
                             .then(travel => {
 
                                 var aTravelMock = {
@@ -146,6 +156,7 @@ function manageTravelRequest(travelId) {
                                 }
 
                                 aTravel = travel;
+
                                 console.info("Datos del viaje: " + JSON.stringify(aTravel));
 
                                 // build DTO for driver
@@ -289,7 +300,17 @@ function manageTravelRequest(travelId) {
                 //actualizar el viaje asociando al chofer
                 console.log(JSON.stringify(aDriver));
                 Travel
-                    .findByPk(travelId)
+                    .findByPk(travelId, {
+                        include: [{
+                                model: Address,
+                                as: 'from'
+                            },
+                            {
+                                model: Address,
+                                as: 'to'
+                            }
+                        ]
+                    })
                     .then(travel => {
                         Travel.update({ "driverId": aDriver.id }, { where: { "id": travel.id } });
                     });
