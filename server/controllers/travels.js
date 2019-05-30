@@ -219,17 +219,31 @@ module.exports = {
         console.info("===========> Llega una confirmación <===============");
         console.info("TravelResource :" + JSON.stringify(req.body));
         var aTravelConfirmationRequestDTO = new travelDTO.TravelConfirmationRequestDTO(req.body);
-        console.log("####message confirmation###: " + JSON.stringify(aTravelConfirmationRequestDTO));
+        console.log("# message confirmation #: " + JSON.stringify(aTravelConfirmationRequestDTO));
         if (aTravelConfirmationRequestDTO.role == "user") {
             console.log("----solicitud de viaje----");
             managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
-                .then((value) => {
+                .then((travel) => {
+                    console.log("%%%%%%%%%%%%%%%%%%%");
+                    console.log(JSON.stringify(travel));
+                    console.log("%%%%%%%%%%%%%%%%%%%");
                     try {
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                        aTravelConfirmationResponseDTO.time = "123";
-                        aTravelConfirmationResponseDTO.driver = travelService.findDriver("987654322");
-                        aTravelConfirmationResponseDTO.user = travelService.findUser("123456782");
+                        aTravelConfirmationResponseDTO.time = "123"//travel.time;
+
+                        /*hay que reemplazar el find driver y find user*/
+                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
+                        aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+
+
+                        /**
+                         * harcodeado para poder probar... porque se manda el id del chofer al que se notifica
+                         * que puede no coincidir con el id del telefono que 
+                         * dado que hay 3 choferes con 3 ids en la base de datos
+                         */
+                        //aTravelConfirmationResponseDTO.driver.id = "987654399";
+
 
                         console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
                         res.status(200).send(aTravelConfirmationResponseDTO);
@@ -245,22 +259,27 @@ module.exports = {
         if (aTravelConfirmationRequestDTO.role == "driver") {
             //if travel is rejected
             console.log(JSON.stringify(aTravelConfirmationRequestDTO));
+            var travelId = aTravelConfirmationRequestDTO.travelId;
 
             if (!aTravelConfirmationRequestDTO.accept) {
                 console.log("-----------------_ travel is rejected ------------------");
-                managerTravelRequest.addResponse(aTravelConfirmationRequestDTO.travelId, false);
+                managerTravelRequest.addResponse(travelId, false);
                 res.status(200).send({ status: 200, message: "viaje rechazado correctamente" });
             } else {
                 //travel is accepted
                 console.log("------------------ travel is accepted ------------------");
-                managerTravelRequest.addResponse(aTravelConfirmationRequestDTO.travelId, true);
-                var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                aTravelConfirmationResponseDTO.time = "123";
-                aTravelConfirmationResponseDTO.user = travelService.findUser("123456782");
-                aTravelConfirmationResponseDTO.driver = travelService.findDriver("987654322");
-
-                res.status(200).send(aTravelConfirmationResponseDTO);
+                managerTravelRequest.addResponse(travelId, true);
+            
+                Travel.findByPk(travelId)
+                .then((travel) =>{
+                    var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
+                    aTravelConfirmationResponseDTO.travelId = travelId;
+                    aTravelConfirmationResponseDTO.time = "123";
+                    aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+                    aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
+                    res.status(200).send(aTravelConfirmationResponseDTO);
+                })
+                .catch((err => res.status(500).send(err)));
             }
         }
     },
@@ -279,7 +298,8 @@ module.exports = {
                         Travel.update({ "status": TRAVEL_COMPLETED }, { where: { "id": travel.id } });
                         var connectionUsers = allSockets.connectionUsers;
                         var aConnectionUser = null;
-                        console.log("travel data: " + travel);
+                        console.log("travel data: " + JSON.stringify(travel));
+                        //console.log("conections: "+JSON.stringify(connectionUsers.keys()))
                         try {
                             if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
                                 aConnectionUser = connectionUsers.get(travel.userId)
@@ -317,7 +337,7 @@ module.exports = {
             var connectionDrivers = allSockets.connectionDrivers;
             var aConnectionUser = null;
             var aConnectionDriver = null;
-            if (aTravelCancelRequestDTO.role == 'USER') {
+            if (aTravelCancelRequestDTO.role == 'user') {
                 try {
                     if (connectionDrivers != undefined /*&& connectionDrivers.has(aTravelCancelRequestDTO.id)*/ ) {
                         console.log("tamaño del map de sockets drivers: " + connectionDrivers.size)
@@ -345,7 +365,7 @@ module.exports = {
                         })
                         .catch(error => { throw error });
                 }
-            } else if (aTravelCancelRequestDTO.role == 'DRIVER') {
+            } else if (aTravelCancelRequestDTO.role == 'driver') {
                 Travel
                     .findByPk(req.body.travelId)
                     .then(travel => {

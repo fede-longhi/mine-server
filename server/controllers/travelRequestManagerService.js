@@ -71,17 +71,10 @@ function manageTravelRequest(travelId) {
         var REJECT_TIMEOUT = 2;
         var REJECT_DRIVER_NO_FOUND = 3;
         var RESOLVE_DRIVER_ACCEPT = 4;
-        //var responseOfDriverToTravels = travelResource.responseOfDriverToTravels;
 
         function bucleFunction(indexRadius, amountDriversNotified) {
 
             return new Promise((resolveBucle, rejectBucle) => {
-                /*if(indexRadius > allRadius.length || amountDriversNotified >= MAXDRIVERSNOTIFICATIONS ){
-                    //reject(REJECT_DRIVER_NO_FOUND);
-                    console.log("========   se seperó el radio o las 3 notificaciones =========")
-                    rejectBucle(REJECT_DRIVER_NO_FOUND);
-                }*/
-
                 //select radius
                 radiusSelected = allRadius[indexRadius];
                 console.log("========= iniciando nueva búsqueda ==========");
@@ -154,6 +147,7 @@ function manageTravelRequest(travelId) {
                                     "travelId": 20,
                                     "userId": 0
                                 }
+                                /*ya está solucionado pero sigue ahi por comodidad*/
 
                                 console.info("Datos del viaje: " + JSON.stringify(aTravel));
 
@@ -313,10 +307,16 @@ function manageTravelRequest(travelId) {
                         ]
                     })
                     .then(travel => {
-                        Travel.update({ "driverId": aDriver.id }, { where: { "id": travel.id } });
+                        travel.update({ driverId: aDriver.id })
+                        .then( (travelUpdated) => {
+                            resolve(travelUpdated);
+                        })
+                        .catch(err => reject(err));
                     })
-                    .catch(err => { console.log("EEEEEEEEEEEEEEE: " + err) });
-                resolve(0);
+                    .catch(err => { 
+                        console.log("EEEEEEEEEEEEEEE: " + err); 
+                        reject(err);
+                    });
             })
             .catch((error) => {
                 if (error == REJECT_ERROR) {
