@@ -276,7 +276,6 @@ module.exports = {
                     aTravelConfirmationResponseDTO.travelId = travelId;
                     aTravelConfirmationResponseDTO.time = "123";
                     aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
-                    aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
                     res.status(200).send(aTravelConfirmationResponseDTO);
                 })
                 .catch((err => res.status(500).send(err)));
