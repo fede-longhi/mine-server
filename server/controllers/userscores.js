@@ -3,6 +3,9 @@ const User = require('../models').User;
 
 module.exports = {
     create(req, res) {
+        console.log("Request");
+        console.log(req);
+        console.log('Request create user score: ' + JSON.stringify(req.body));
         return UserScore
         .create({
             fromId: req.body.fromId,
@@ -23,7 +26,10 @@ module.exports = {
                 res.status(201).send(userScore);
             })
         })
-        .catch(error => res.status(400).send(error));
+        .catch(error => {
+            console.log(error.message);
+            res.status(400).send(error);
+        });
     },
 
     list(req, res) {
