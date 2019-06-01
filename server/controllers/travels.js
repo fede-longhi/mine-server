@@ -230,7 +230,7 @@ module.exports = {
                     try {
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                        aTravelConfirmationResponseDTO.time = "123"//travel.time;
+                        aTravelConfirmationResponseDTO.time = "123" //travel.time;
 
                         /*hay que reemplazar el find driver y find user*/
                         aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
@@ -269,16 +269,16 @@ module.exports = {
                 //travel is accepted
                 console.log("------------------ travel is accepted ------------------");
                 managerTravelRequest.addResponse(travelId, true);
-            
+
                 Travel.findByPk(travelId)
-                .then((travel) =>{
-                    var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                    aTravelConfirmationResponseDTO.travelId = travelId;
-                    aTravelConfirmationResponseDTO.time = "123";
-                    aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
-                    res.status(200).send(aTravelConfirmationResponseDTO);
-                })
-                .catch((err => res.status(500).send(err)));
+                    .then((travel) => {
+                        var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
+                        aTravelConfirmationResponseDTO.travelId = travelId;
+                        aTravelConfirmationResponseDTO.time = "123";
+                        aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+                        res.status(200).send(aTravelConfirmationResponseDTO);
+                    })
+                    .catch((err => res.status(500).send(err)));
             }
         }
     },
@@ -386,7 +386,24 @@ module.exports = {
                                 console.info("Available User");
                                 console.log("Travel update right");
                                 aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
-                                return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });
+                                DriverScore
+                                    .create({
+                                        fromId: travel.userId,
+                                        toId: travel.driverId,
+                                        travelId: travel.id,
+                                        value: VALUE_BY_DRIVER_CANCELED_TRAVEL,
+                                        comments: COMMENT_BY_DRIVER_CANCELED_TRAVEL
+                                    })
+                                    .then(driverScore => {
+                                        Driver.findByPk(driverScore.toId)
+                                            .then(driver => {
+                                                var newTotalScore = driver.totalScore + driverScore.value;
+                                                var newScoreQuantity = driver.scoreQuantity + 1;
+                                                Driver.update({ totalScore: newTotalScore, scoreQuantity: newScoreQuantity }, { where: { 'id': driver.id } })
+                                                return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });
+                                            })
+                                            .catch(error => { throw error });
+                                    })
                             }
                         } else {
                             return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
