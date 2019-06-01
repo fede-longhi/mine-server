@@ -289,7 +289,6 @@ module.exports = {
     finalize(req, res) {
         try {
             console.log("finalize body: " + JSON.stringify(req.body));
-
             Travel
                 .findByPk(req.body.travelId)
                 .then(travel => {

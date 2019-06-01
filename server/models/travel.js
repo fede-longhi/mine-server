@@ -13,9 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
     price: DataTypes.DOUBLE,
-    hasCompanion: DataTypes.BOOLEAN,
-    // from: DataTypes.STRING,
-    // to: DataTypes.STRING
+    hasCompanion: DataTypes.BOOLEAN
   },
   {});
   

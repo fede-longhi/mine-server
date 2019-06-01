@@ -1,5 +1,11 @@
 const Driver = require('../models').Driver;
 const Party = require('../models').Party;
+const Travel = require('../models').Travel;
+const User = require('../models').User;
+const Address = require('../models').Address;
+const UserScore = require('../models').UserScore;
+const DriverScore = require('../models').DriverScore;
+
 
 module.exports = {
     create(req, res) {
@@ -83,5 +89,56 @@ module.exports = {
             .catch(error => res.status(400).send(error));
     },
 
+    getTravels(req, res) {
+        return Travel
+        .findAll({
+            where: {
+                driverId: req.params.driverId,
+            },
+            include: [
+                {
+                    model: Driver,
+                    as: 'driver'
+                },
+                {
+                    model: User,
+                    as: 'user'
+                },
+                {
+                    model: Address,
+                    as: 'from'
+                },
+                {
+                    model: Address,
+                    as: 'to'
+                }
+            ]
+            
+        })
+        .then((travels) => res.status(200).send(travels))
+        .catch(error => res.status(400).send(error));
+    },
+
+    getScoresReceived(req, res) {
+        return DriverScore
+        .findAll({
+            where: {
+                toId: req.params.driverId,
+            }
+        })
+        .then((driverScore) => res.status(200).send(driverScore))
+        .catch(error => res.status(400).send(error));
+    },
+
+    getScoresGiven(req, res) {
+        return UserScore
+        .findAll({
+            where: {
+                fromId: req.params.driverId,
+            }
+        })
+        .then((userScore) => res.status(200).send(userScore))
+        .catch(error => res.status(400).send(error));
+    }
 
 }
