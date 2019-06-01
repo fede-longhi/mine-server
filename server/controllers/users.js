@@ -79,4 +79,56 @@ module.exports = {
             })
             .catch(error => res.status(400).send(error));
     },
+
+    getTravels(req, res) {
+        return Travel
+        .findAll({
+            where: {
+                userId: req.params.userId,
+            },
+            include: [
+                {
+                    model: Driver,
+                    as: 'driver'
+                },
+                {
+                    model: User,
+                    as: 'user'
+                },
+                {
+                    model: Address,
+                    as: 'from'
+                },
+                {
+                    model: Address,
+                    as: 'to'
+                }
+            ]
+            
+        })
+        .then((travels) => res.status(200).send(travels))
+        .catch(error => res.status(400).send(error));
+    },
+
+    getScoresReceived(req, res) {
+        return UserScore
+        .findAll({
+            where: {
+                toId: req.params.userId,
+            }
+        })
+        .then((userScore) => res.status(200).send(userScore))
+        .catch(error => res.status(400).send(error));
+    },
+
+    getScoresGiven(req, res) {
+        return DriverScore
+        .findAll({
+            where: {
+                fromId: req.params.userId,
+            }
+        })
+        .then((driverScore) => res.status(200).send(driveScore))
+        .catch(error => res.status(400).send(error));
+    }
 }

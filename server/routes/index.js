@@ -54,6 +54,10 @@ module.exports = (app) => {
     app.put('/api/users/:userId', usersController.update);
     app.delete('/api/users/:userId', usersController.destroy);
 
+    app.get('/api/users/:userId/travels', usersController.getTravels);
+    app.get('/api/users/:userId/receivedScores', usersController.getScoresReceived);
+    app.get('/api/users/:userId/givenScores', usersController.getScoresGiven);
+
     // ********************* TRAVELS *************************
     app.post('/api/travels', travelsController.create);
     app.get('/api/travels', travelsController.list);
