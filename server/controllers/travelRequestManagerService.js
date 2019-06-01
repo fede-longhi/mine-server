@@ -136,7 +136,7 @@ function manageTravelRequest(travelId) {
                             })
                             .then(aTravel => {
 
-                                var aTravelMock = {
+                                /*var aTravelMock = {
                                     "driverId": 0,
                                     "from": { "latitude": -34.69, "longitude": -58.434 },
                                     "hasACompanion": true,
@@ -146,7 +146,7 @@ function manageTravelRequest(travelId) {
                                     "to": { "latitude": -34.5886603, "longitude": -58.4391604 },
                                     "travelId": 20,
                                     "userId": 0
-                                }
+                                }*/
                                 /*ya está solucionado pero sigue ahi por comodidad*/
 
                                 console.info("Datos del viaje: " + JSON.stringify(aTravel));
@@ -154,8 +154,13 @@ function manageTravelRequest(travelId) {
                                 // build DTO for driver
                                 var aTravelNotificationDTO = new travelDTOModel.TravelNotificationDTO();
                                 aTravelNotificationDTO.travelId = aTravel.id;
-                                aTravelNotificationDTO.from = aTravelMock.from;
-                                aTravelNotificationDTO.to = aTravelMock.to;
+                                if (process.env.IS_MOCK) {
+                                    aTravelNotificationDTO.from = { "latitude": -34.69, "longitude": -58.434 };
+                                    aTravelNotificationDTO.to = { "latitude": -34.5886603, "longitude": -58.4391604 };
+                                } else {
+                                    aTravelNotificationDTO.from = aTravel.from;
+                                    aTravelNotificationDTO.to = aTravel.to;
+                                }
                                 aTravelNotificationDTO.smallPetQuantity = aTravel.smallPetQuantity;
                                 aTravelNotificationDTO.mediumPetQuantity = aTravel.mediumPetQuantity;
                                 aTravelNotificationDTO.bigPetQuantity = aTravel.bigPetQuantity;
@@ -346,8 +351,7 @@ function findBestDriver(travelId, searchRadius, excludedDrivers) {
     var candidateDrivers = new Array();
 
     // find optimum driver for user
-    // is a map that contain (key,value) -> (travelId, GeographicCoordinate)
-    // var positionsDrivers = allSockets.positionsDrivers;
+    // is a map that contain (key,value) -> (driverId, GeographicCoordinate)
     var positionsDrivers = driversMock.allDriversMock;
 
     if (positionsDrivers == undefined || positionsDrivers == null || positionsDrivers.size == 0)
@@ -356,88 +360,193 @@ function findBestDriver(travelId, searchRadius, excludedDrivers) {
     console.log("cantidad de choferes mandando posiciones: " + positionsDrivers.size);
     console.log("BUSCANDO CHOFERES con un RADIO en metros de: " + searchRadius);
 
-    //find the travel to obtain origin of travel
-    //var aTravel = travelService.findTravelById(travelId);
-    var aTravel = {
-        "driverId": 0,
-        "from": { "latitude": -34.69, "longitude": -58.434 },
-        "hasACompanion": true,
-        "petAmountLarge": 1,
-        "petAmountMedium": 1,
-        "petAmountSmall": 0,
-        "to": { "latitude": -34.5886603, "longitude": -58.4391604 },
-        "travelId": 0,
-        "userId": 0
-    }
-
-    var candidateDrivers = [];
-
-    positionsDrivers.forEach((value, key) => {
-        distance = haversine(value, aTravel.from, { unit: 'meter' });
-        console.log("latitude Driver: " + value.latitude);
-        console.log("longitude Driver: " + value.longitude);
-        console.log("latitude origin " + aTravel.from.latitude);
-        console.log("longitude origin " + aTravel.from.latitude);
-        console.log("distancia: " + distance);
-        if (distance < searchRadius) {
-            //obtain driver to evaluate his score
-            console.log("El chofer está dentro del radio de búsqueda");
-
-            var aDriver = travelService.findDriver(key);
-            candidateDrivers.push(aDriver);
-
+    //#####################INIT MOCK#####################
+    if (process.env.IS_MOCK) {
+        var aTravel = {
+            "driverId": 0,
+            "from": { "latitude": -34.69, "longitude": -58.434 },
+            "hasACompanion": true,
+            "petAmountLarge": 1,
+            "petAmountMedium": 1,
+            "petAmountSmall": 0,
+            "to": { "latitude": -34.5886603, "longitude": -58.4391604 },
+            "travelId": 0,
+            "userId": 0
         }
-    });
-
-    console.log("*** terminó la búsqueda de choferes ***");
-
-    if (candidateDrivers.length == 0) {
-        console.log("No se encontraron choferes candidatos en el radio: " + searchRadius);
-        return null;
-    } else {
-        console.log("Antes de excluir choferes que rechazaron el viaje hay: " + candidateDrivers.length + " choferes");
-    }
-
-    //take out excluded drivers
-    if (excludedDrivers != null) {
-        excludedDrivers.forEach(driverID => {
-            console.log("chofer excluido con id: " + driverID);
-            //find index of driver with id
-            index = candidateDrivers.findIndex(driver => {
-                    return driver.id == driverID;
-                })
-                //remove driver
-            candidateDrivers.splice(index, 1);
-        });
-    }
-
-    if (candidateDrivers.length == 0) {
-        console.log("No queadaron choferes Luego de haber excluir Choferes en el radio de búsqueda: " + searchRadius);
-        return null;
-    } else {
-        console.log("Luego de haber excluido quedaron: " + candidateDrivers.length + " choferes");
-    }
-
-    function getBestDriver() {
-        var bestDriver = null;
-        candidateDrivers.forEach(driver => {
-            if (bestDriver == null)
-                bestDriver = driver;
-            else {
-                if (bestDriver.priority < driver.priority)
-                    bestDriver = driver;
-                else if (bestDriver.priority === driver.priority &&
-                    bestDriver.amountTravels <= driver.amountTravels)
-                    bestDriver = driver;
+    
+        var candidateDrivers = [];
+    
+        positionsDrivers.forEach((value, key) => {
+            distance = haversine(value, aTravel.from, { unit: 'meter' });
+            console.log("latitude Driver: " + value.latitude);
+            console.log("longitude Driver: " + value.longitude);
+            console.log("latitude origin " + aTravel.from.latitude);
+            console.log("longitude origin " + aTravel.from.latitude);
+            console.log("distancia: " + distance);
+            if (distance < searchRadius) {
+                //obtain driver to evaluate his score
+                console.log("El chofer está dentro del radio de búsqueda");
+                var aDriver = travelService.findDriver(key);
+                candidateDrivers.push(aDriver);
             }
         });
-        return bestDriver;
-    }
+    
+        console.log("*** terminó la búsqueda de choferes ***");
+    
+        if (candidateDrivers.length == 0) {
+            console.log("No se encontraron choferes candidatos en el radio: " + searchRadius);
+            return null;
+        } else {
+            console.log("Antes de excluir choferes que rechazaron el viaje hay: " + candidateDrivers.length + " choferes");
+        }
+    
+        //take out excluded drivers
+        if (excludedDrivers != null) {
+            excludedDrivers.forEach(driverID => {
+                console.log("chofer excluido con id: " + driverID);
+                //find index of driver with id
+                index = candidateDrivers.findIndex(driver => {
+                        return driver.id == driverID;
+                    })
+                    //remove driver
+                candidateDrivers.splice(index, 1);
+            });
+        }
+    
+        if (candidateDrivers.length == 0) {
+            console.log("No queadaron choferes Luego de haber excluir Choferes en el radio de búsqueda: " + searchRadius);
+            return null;
+        } else {
+            console.log("Luego de haber excluido quedaron: " + candidateDrivers.length + " choferes");
+        }
+    
+        return getBestDriver(candidateDrivers);
+        //#####################END MOCK#####################
 
-    return getBestDriver();
+    }else{
+        Travel.findByPk(travelId)
+        .then( (travel) => {
+            // is a map that contain (key,value) -> (driverId, GeographicCoordinate)
+            positionsDrivers.forEach((value, key) => {
+                distance = haversine(value, travel.from, { unit: 'meter' });
+                console.log("latitude Driver: " + value.latitude);
+                console.log("longitude Driver: " + value.longitude);
+                console.log("latitude origin " + travel.from.latitude);
+                console.log("longitude origin " + travel.from.longitude);
+                console.log("distancia: " + distance);
+                if (distance < searchRadius) {
+                    //obtain driver to evaluate his score
+                    console.log("El chofer está dentro del radio de búsqueda");
+                    Driver.findByPk(key)
+                    .then( (driver) => { candidateDrivers.push(aDriver) })
+                    .catch( (err) => {
+                        console.error("driver no found in database");
+                        console.error(err);
+                    });
+                }
+            });
+    
+            console.log("*** terminó la búsqueda de choferes ***");
+    
+            if (candidateDrivers.length == 0) {
+                console.log("No se encontraron choferes candidatos en el radio: " + searchRadius);
+                return null;
+            } else {
+                console.log("Antes de excluir choferes que rechazaron el viaje hay: " + candidateDrivers.length + " choferes");
+            }
+        
+            //take out excluded drivers
+            if (excludedDrivers != null) {
+                excludedDrivers.forEach(driverID => {
+                    console.log("chofer excluido con id: " + driverID);
+                    //find index of driver with id
+                    index = candidateDrivers.findIndex(driver => {
+                            return driver.id == driverID;
+                        })
+                        //remove driver
+                    candidateDrivers.splice(index, 1);
+                });
+            }
+        
+            if (candidateDrivers.length == 0) {
+                console.log("No queadaron choferes Luego de haber excluir Choferes en el radio de búsqueda: " + searchRadius);
+                return null;
+            } else {
+                console.log("Luego de haber excluido quedaron: " + candidateDrivers.length + " choferes");
+            }
+    
+            return chooseBestDriver(candidateDrivers);
+    
+        })
+        .catch( (err) =>{
+            console.error(err);
+            return null;
+        })
+    }
 }
 
 module.exports = {
     manageTravelRequest: manageTravelRequest,
     addResponse: addResponse,
+}
+
+function getBestDriver(candidateDrivers) {
+    var bestDriver = null;
+    candidateDrivers.forEach(driver => {
+        if (bestDriver == null)
+            bestDriver = driver;
+        else {
+            if (bestDriver.priority < driver.priority)
+                bestDriver = driver;
+            else if (bestDriver.priority === driver.priority &&
+                bestDriver.amountTravels <= driver.amountTravels)
+                bestDriver = driver;
+        }
+    });
+    return bestDriver;
+}
+
+function chooseBestDriver(candidateDrivers) {
+    var bestDriver = null;
+    candidateDrivers.forEach(driver => {
+        if (bestDriver == null)
+            bestDriver = driver;
+        else {
+            var priorityBestDriver = bestDriver.totalScore/bestDriver.scoreQuantity;
+            priorityBestDriver += getPointsByAmountTravels(bestDriver.travelAmount);
+            var priorityActualDriver = driver.totalScore/driver.scoreQuantity;
+            priorityActualDriver += getPointsByAmountTravels(driver.travelAmount);
+            if (priorityBestDriver < priorityActualDriver)
+                bestDriver = driver;
+            else if (priorityBestDriver === priorityActualDriver &&
+                bestDriver.travelAmount <= driver.travelAmount)
+                bestDriver = driver;
+        }
+    });
+    return bestDriver;
+}
+
+function getPointsByAmountTravels(amountTravels) {
+    const lowCategory = 9;
+    const basicCategory = 49;
+    const mediumCategory = 99;
+    const highCategory = 499;
+
+    const pointsLowCategory = 0.2;
+    const pointsBasicCategory = 0.5;
+    const pointsMediumCategory = 0.7;
+    const pointsHighCategory = 0.9;
+    const pointsPremiumCategory = 1;
+
+    if (amountTravels <= lowCategory) {
+        return pointsLowCategory;
+    } else if (amountTravels <= basicCategory) {
+        return pointsBasicCategory;
+    } else if (amountTravels <= mediumCategory) {
+        return pointsMediumCategory;
+    } else if (amountTravels <= highCategory) {
+        return pointsHighCategory;
+    } else {
+        return pointsPremiumCategory;
+    }
 }

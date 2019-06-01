@@ -233,7 +233,26 @@ module.exports = {
                         aTravelConfirmationResponseDTO.time = "123"//travel.time;
 
                         /*hay que reemplazar el find driver y find user*/
-                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
+
+                        //aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
+                        //aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+
+                        //aTravelConfirmationResponseDTO.driver.id = travel.driverId;
+                        //aTravelConfirmationResponseDTO.user.id = travel.userId;
+
+                        Driver.findByPk(travel.driverId)
+                        .then((driver)=>{
+                            aTravelConfirmationResponseDTO.driver = driver;
+
+                            User.findByPk(travel.userId)
+                            .then((user)=>{
+                                aTravelConfirmationResponseDTO.user = user;
+                                console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
+                                res.status(200).send(aTravelConfirmationResponseDTO);
+                            })
+                            .catch((err)=>res.status(500).send(err));
+                        })
+                        .catch((err)=>res.status(500).send(err));
                         aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
 
 
@@ -245,8 +264,8 @@ module.exports = {
                         //aTravelConfirmationResponseDTO.driver.id = "987654399";
 
 
-                        console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
-                        res.status(200).send(aTravelConfirmationResponseDTO);
+                        //console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
+                        //res.status(200).send(aTravelConfirmationResponseDTO);
                     } catch (error) {
                         res.status(500).send(error);
                     }
@@ -275,8 +294,16 @@ module.exports = {
                     var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                     aTravelConfirmationResponseDTO.travelId = travelId;
                     aTravelConfirmationResponseDTO.time = "123";
-                    aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
-                    res.status(200).send(aTravelConfirmationResponseDTO);
+                    //aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+
+                    User.findByPk(travel.userId)
+                    .then((user)=>{
+                        aTravelConfirmationResponseDTO.user = user;
+                        console.log("lo que se va mandar al chofer: " + JSON.stringify(aTravelConfirmationResponseDTO));
+                        res.status(200).send(aTravelConfirmationResponseDTO);
+                    })
+                    .catch((err)=>res.status(500).send(err));
+                    //res.status(200).send(aTravelConfirmationResponseDTO);
                 })
                 .catch((err => res.status(500).send(err)));
             }
