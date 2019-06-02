@@ -14,7 +14,8 @@
     "pg-hstore": "^2.3.2",
     "sequelize": "^5.8.6",
     "socket.io": "^2.2.0",
-    "haversine": "^1.1.1"
+    "haversine": "^1.1.1",
+    "cors": "2.8.5"
   },
   "devDependencies": {
     "faker": "^4.1.0",
