@@ -307,8 +307,10 @@ module.exports = {
                         console.log("travel data: " + JSON.stringify(travel));
                         //console.log("conections: "+JSON.stringify(connectionUsers.keys()))
                         try {
+                            console.log("connectionUsers" + connectionUsers);
                             if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
-                                aConnectionUser = connectionUsers.get(travel.userId)
+                                aConnectionUser = connectionUsers.get(travel.userId);
+                                console.log("aConnectionUsers" + aConnectionUser);
                             }
                         } catch (err) {
                             console.error(err);
