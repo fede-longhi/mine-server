@@ -13,8 +13,9 @@ const app = express();
 //Enable Alls CORS Request
 app.use(cors());
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json({ limit: '5mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 require('./server/routes')(app);
 app.get('*', (req, res) => res.status(200).send({
