@@ -8,7 +8,7 @@ const vehicles = require('./vehicles');
 const driverscores = require('./driverscores');
 const userscores = require('./userscores');
 const credentials = require('./credentials');
-
+const fileDocuments = require('./filedocuments');
 
 module.exports = {
     todos,
@@ -20,5 +20,6 @@ module.exports = {
     vehicles,
     driverscores,
     userscores,
-    credentials
+    credentials,
+    fileDocuments
 };

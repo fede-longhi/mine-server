@@ -3,6 +3,7 @@ const Party = require('../models').Party;
 const User = require('../models').User;
 const credentialsDTO = require('../dtos/request/credentialsDTO');
 const sequelize = require('../models/index').sequelize;
+const DISABLE = 'disable';
 
 module.exports = {
     login(req, res) {
@@ -45,7 +46,7 @@ module.exports = {
     },
 
     register(req, res) {
-        console.log(req.body);
+        console.log("register. facebooId: " + req.body.facebookId + ". Name: " + req.body.name);
         try {
             var registerRequestDTO = new credentialsDTO.RegisterRequestDTO(req.body);
             if (registerRequestDTO.role == 'user') {
@@ -63,7 +64,7 @@ module.exports = {
                                         .then(party => {
                                             User.create({
                                                     id: registerRequestDTO.facebookId,
-                                                    status: registerRequestDTO.status,
+                                                    status: DISABLE,
                                                     totalScore: 0,
                                                     scoreQuantity: 0,
                                                     partyId: party.id
@@ -97,7 +98,7 @@ module.exports = {
                                         .then(party => {
                                             Driver.create({
                                                     id: registerRequestDTO.facebookId,
-                                                    status: registerRequestDTO.status,
+                                                    status: DISABLE,
                                                     licenseNumber: registerRequestDTO.licenseNumber,
                                                     totalScore: 0,
                                                     scoreQuantity: 0,

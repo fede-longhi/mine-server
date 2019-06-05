@@ -9,6 +9,8 @@ const Address = require('../models').Address;
  * contains all sockets of all users and drivers
  */
 var allSockets = require("../../bin/www");
+const TRAVEL_ACCEPTED_BY_USER = 'pending';
+const TRAVEL_ACCEPTED_BY_DRIVER = 'on course';
 const TRAVEL_COMPLETED = "completed";
 const TRAVEL_CANCELED_BY_USER = "canceled by user";
 const TRAVEL_CANCELED_BY_DRIVER = "canceled by driver";
@@ -244,40 +246,45 @@ module.exports = {
         var aTravelConfirmationRequestDTO = new travelDTO.TravelConfirmationRequestDTO(req.body);
         console.log("# message confirmation #: " + JSON.stringify(aTravelConfirmationRequestDTO));
         if (aTravelConfirmationRequestDTO.role == "user") {
-            console.log("----solicitud de viaje----");
-            managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
-                .then((travel) => {
-                    console.log("%%%%%%%%%%%%%%%%%%%");
-                    console.log(JSON.stringify(travel));
-                    console.log("%%%%%%%%%%%%%%%%%%%");
-                    try {
-                        var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
-                        aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                        aTravelConfirmationResponseDTO.time = "123" //travel.time;
+            console.log("----Update travel----");
+            Travel
+                .findByPk(aTravelConfirmationRequestDTO.travelId)
+                .then(travel => {
+                    Travel.update({ "status": TRAVEL_ACCEPTED_BY_USER }, { where: { "id": travel.id } });
+                    managerTravelRequest.manageTravelRequest(aTravelConfirmationRequestDTO.travelId)
+                        .then((travel) => {
+                            console.log("%%%%%%%%%%%%%%%%%%%");
+                            console.log(JSON.stringify(travel));
+                            console.log("%%%%%%%%%%%%%%%%%%%");
+                            try {
+                                var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
+                                aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
+                                aTravelConfirmationResponseDTO.time = "123" //travel.time;
 
-                        /*hay que reemplazar el find driver y find user*/
-                        aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
-                        aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
-
-
-                        /**
-                         * harcodeado para poder probar... porque se manda el id del chofer al que se notifica
-                         * que puede no coincidir con el id del telefono que 
-                         * dado que hay 3 choferes con 3 ids en la base de datos
-                         */
-                        //aTravelConfirmationResponseDTO.driver.id = "987654399";
+                                /*hay que reemplazar el find driver y find user*/
+                                aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
+                                aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
 
 
-                        console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
-                        res.status(200).send(aTravelConfirmationResponseDTO);
-                    } catch (error) {
-                        res.status(500).send(error);
-                    }
+                                /**
+                                 * harcodeado para poder probar... porque se manda el id del chofer al que se notifica
+                                 * que puede no coincidir con el id del telefono que 
+                                 * dado que hay 3 choferes con 3 ids en la base de datos
+                                 */
+                                //aTravelConfirmationResponseDTO.driver.id = "987654399";
+
+                                console.log("lo que se va mandar al usuario: " + JSON.stringify(aTravelConfirmationResponseDTO));
+                                res.status(200).send(aTravelConfirmationResponseDTO);
+                            } catch (error) {
+                                res.status(500).send(error);
+                            }
+                        })
+                        .catch((value) => {
+                            console.log("respuesta de manager: " + value);
+                            res.status(400).send({ status: 400, message: "No hay choferes en este momento" });
+                        })
                 })
-                .catch((value) => {
-                    console.log("respuesta de manager: " + value);
-                    res.status(400).send({ status: 400, message: "No hay choferes en este momento" });
-                })
+                .catch(error => { throw error });
         }
         if (aTravelConfirmationRequestDTO.role == "driver") {
             //if travel is rejected
@@ -295,6 +302,7 @@ module.exports = {
 
                 Travel.findByPk(travelId)
                     .then((travel) => {
+                        Travel.update({ "status": TRAVEL_ACCEPTED_BY_DRIVER }, { where: { "id": travel.id } });
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = travelId;
                         aTravelConfirmationResponseDTO.time = "123";
@@ -322,8 +330,10 @@ module.exports = {
                         console.log("travel data: " + JSON.stringify(travel));
                         //console.log("conections: "+JSON.stringify(connectionUsers.keys()))
                         try {
+                            console.log("connectionUsers" + connectionUsers);
                             if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
-                                aConnectionUser = connectionUsers.get(travel.userId)
+                                aConnectionUser = connectionUsers.get(travel.userId);
+                                console.log("aConnectionUsers" + aConnectionUser);
                             }
                         } catch (err) {
                             console.error(err);

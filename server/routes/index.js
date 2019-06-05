@@ -8,6 +8,7 @@ const userScoresController = require('../controllers').userscores;
 const driverScoresController = require('../controllers').driverscores;
 const addressesController = require('../controllers').addresses;
 const credentialsController = require('../controllers').credentials;
+const fileDocumentsController = require('../controllers').fileDocuments;
 
 module.exports = (app) => {
     app.post('/travel/cotization', travelsController.simulateQuote);
@@ -83,6 +84,12 @@ module.exports = (app) => {
     app.post('/api/userScores', userScoresController.create);
     app.get('/api/userScores', userScoresController.list);
 
+    // ********************* FILE DOCUMENTS *************************
+    app.post('/api/fileDocuments', fileDocumentsController.create);
+    app.get('/api/fileDocuments', fileDocumentsController.list);
+    app.get('/api/fileDocuments/:fileDocumentId', fileDocumentsController.retrieve);
+    app.put('/api/fileDocuments/:fileDocumentId', fileDocumentsController.update);
+    app.delete('/api/fileDocuments/:fileDocumentId', fileDocumentsController.destroy);
     // For any other request method on todo items, we're going to return "Method Not Allowed"
     app.all('/api/todos/:todoId/items', (req, res) =>
         res.status(405).send({
