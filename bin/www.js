@@ -8,8 +8,7 @@ app.set('port', port);
 const server = http.createServer(app);
 server.listen(port);
 
-var connectionModel = require("../server/util/connection")
-var global = require("../server/util/util");
+var connectionModel = require("../server/utils/connection");
 io = require('socket.io').listen(server);
 io.set('transports', ['websocket']);
 
