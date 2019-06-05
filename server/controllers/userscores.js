@@ -3,8 +3,6 @@ const User = require('../models').User;
 
 module.exports = {
     create(req, res) {
-        console.log("Request");
-        console.log(req);
         console.log('Request create user score: ' + JSON.stringify(req.body));
         return UserScore
         .create({

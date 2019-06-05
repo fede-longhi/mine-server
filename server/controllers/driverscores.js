@@ -3,6 +3,7 @@ const Driver = require('../models').Driver;
 
 module.exports = {
     create(req, res) {
+        console.log('Request create driver score: ' + JSON.stringify(req.body));
         return DriverScore
         .create({
             id: req.body.id,
