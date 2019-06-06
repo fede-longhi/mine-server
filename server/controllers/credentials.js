@@ -1,5 +1,6 @@
 const Driver = require('../models').Driver;
 const Party = require('../models').Party;
+const FileDocument = require('../models').FileDocument;
 const User = require('../models').User;
 const credentialsDTO = require('../dtos/request/credentialsDTO');
 const sequelize = require('../models/index').sequelize;
@@ -69,7 +70,19 @@ module.exports = {
                                                     scoreQuantity: 0,
                                                     partyId: party.id
                                                 })
-                                                .then(res.status(200).send(JSON.stringify({ status: 200, message: "User register successfuly" })))
+                                                .then(user => {
+                                                    registerRequestDTO.files.forEach(fileDocument => {
+                                                        fileDocument.partyId = user.partyId;
+                                                        FileDocument.create({
+                                                                name: fileDocument.name,
+                                                                extension: fileDocument.extension,
+                                                                partyId: user.partyId,
+                                                                data: fileDocument.data})
+                                                            .then(console.log("Create File Documente"))
+                                                            .catch(error => res.status(400).send(error));
+                                                    })
+                                                    res.status(200).send(JSON.stringify({ status: 200, message: "User register successfuly" }));
+                                                })
                                                 .catch(err => {
                                                     console.error(err);
                                                     res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
@@ -104,7 +117,18 @@ module.exports = {
                                                     scoreQuantity: 0,
                                                     partyId: party.id
                                                 })
-                                                .then(res.status(200).send(JSON.stringify({ status: 200, message: "Driver register successfuly" })))
+                                                .then(driver => {
+                                                    registerRequestDTO.files.forEach(fileDocument => {
+                                                        FileDocument.create({
+                                                                name: fileDocument.name,
+                                                                extension: fileDocument.extension,
+                                                                partyId: driver.partyId,
+                                                                data: fileDocument.data})
+                                                            .then(console.log("Create File Documente"))
+                                                            .catch(error => res.status(400).send(error));
+                                                    })
+                                                    res.status(200).send(JSON.stringify({ status: 200, message: "Driver register successfuly" }));
+                                                })
                                                 .catch(err => {
                                                     console.error(err);
                                                     res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));

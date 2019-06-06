@@ -86,8 +86,7 @@ module.exports = (app) => {
 
     // ********************* FILE DOCUMENTS *************************
     app.post('/api/fileDocuments', fileDocumentsController.create);
-    app.get('/api/fileDocuments', fileDocumentsController.list);
-    app.get('/api/fileDocuments/:fileDocumentId', fileDocumentsController.retrieve);
+    app.get('/api/fileDocuments', fileDocumentsController.retrieve);
     app.put('/api/fileDocuments/:fileDocumentId', fileDocumentsController.update);
     app.delete('/api/fileDocuments/:fileDocumentId', fileDocumentsController.destroy);
     // For any other request method on todo items, we're going to return "Method Not Allowed"
