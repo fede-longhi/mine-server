@@ -5,94 +5,12 @@ var travel = require("../../dtos/model/travel");
 const Driver = require("../../models").Driver;
 const Party = require('../../models').Party;
 const User = require("../../models").User;
-
 var realDrivers = new Array;
-
-/*exports.findAllDrivers = function findAllDrivers() {
-    console.info("partyServiceMock: findAllDrivers");
-    if (drivers == null) {
-        var driver1 = new party.DriverDTO();
-        driver1.id = "987654322";
-        driver1.name = "Michael Schumacher";
-        driver1.lastName = "Schumacher";
-        driver1.license = "999999991";
-        driver1.pointsCategory = "0.5";
-        driver1.score = "4";
-        driver1.prioriry = "4.5";
-        driver1.amountTravels = "20";
-        var driver2 = new party.DriverDTO();
-        driver2.id = "987654321";
-        driver2.name = "Juan Manuel Fangio";
-        driver2.lastName = "Fangio";
-        driver2.license = "999999992";
-        driver2.pointsCategory = "0.7";
-        driver2.score = "4";
-        driver2.prioriry = "4.7";
-        driver2.amountTravels = "50";
-        var driver3 = new party.DriverDTO();
-        driver3.id = "987654399";
-        driver3.name = "Lewis Hamilton";
-        driver3.lastName = "Hamilton";
-        driver3.license = "999999993";
-        driver3.pointsCategory = "1";
-        driver3.score = "3.7";
-        driver3.prioriry = "4.7";
-        driver3.amountTravels = "600";
-        var drivers = [];
-        drivers.push(driver1);
-        drivers.push(driver2);
-        drivers.push(driver3);
-    }
-    return drivers;
-};*/
-
-exports.findAllDrivers = function findAllDrivers() {
-    console.info("partyServiceMock: findAllDrivers");
-    if (realDrivers != null) {
-        return realDrivers;
-    }
-};
-
 var allDrivers = new Map();
-//var geo = new travel.GeographicCoordenate({latitude:-34.6986,longitude:-58.49});
-/*var geo = new travel.GeographicCoordenate({latitude:-34.69,longitude:-58.4301});
-allDrivers.set(1,geo);
-geo = new travel.GeographicCoordenate({latitude:-34.75,longitude:-58.438});
-allDrivers.set(2,geo);
-geo = new travel.GeographicCoordenate({latitude:-34.3,longitude:-58});
-allDrivers.set(3,geo);
-console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
 
-//var geo = new travel.GeographicCoordenate({latitude:-34.6986,longitude:-58.49});
-
-/*var geo = new travel.GeographicCoordenate({latitude:-54.69,longitude:-58.4301});
-allDrivers.set(1,geo);
-geo = new travel.GeographicCoordenate({latitude:-54.75,longitude:-58.438});
-allDrivers.set(2,geo);
-geo = new travel.GeographicCoordenate({latitude:-54.3,longitude:-58});
-allDrivers.set(3,geo);
-console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
-
-/*
-    Agregar 3 choferes reales de la DB.
-*/
-
-Driver
-    .findAll()
-    .then(drivers => {
-        var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
-        allDrivers.set(drivers[2].id, geo);
-        geo = new travel.GeographicCoordenate({ latitude: -34.691, longitude: -58.4345 });
-        allDrivers.set(drivers[1].id, geo);
-        geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
-        allDrivers.set(drivers[0].id, geo);
-        console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
-        console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
-
-        exports.allDriversMock = allDrivers;
-    })
-    .catch((error) => console.log(error));
-
+/**
+ * Users
+ */
 
 exports.findAllUsers = function findAllUsers() {
     console.info("partyServiceMock: findAllUsers");
@@ -117,41 +35,70 @@ exports.findAllUsers = function findAllUsers() {
     return users;
 };
 
-exports.findAllRealDrivers = function findAllRealDrivers() {
-    return new Promise((resolve) =>{
-        Driver.findAll({
-            include: [{
-                model: Party,
-                as: 'party'
-            }]
-        })
-        .then((drivers) => {
-            var i = 0;
-            var total = drivers.length;
-            drivers.forEach(element => {
-                i++;
-                var driver2 = new party.DriverDTO();
-                driver2.id = element.id;
-                driver2.name = element.party.name;
-                driver2.lastName = "";
-                driver2.license = element.licenseNumber;
-                driver2.pointsCategory = getPointsByAmountTravels(element.travelAmount);
-                var scorePromedio = element.totalScore/element.scoreQuantity;
-                driver2.score =scorePromedio;
-                driver2.prioriry = scorePromedio+driver2.pointsCategory;
-                driver2.amountTravels = element.travelAmount;
-                realDrivers.push(driver2);
-                //console.log(driver2)
-                if(i === total){
-                    console.log("###########&%/%&$##/&&/(&7");
-                    resolve(0);
-                }
-            });
-        })
-        .catch((err)=>{
-            console.log(err);
-            realDrivers = null
+
+exports.loadUsers = function loadUsers(req, res, next) {
+    User.findAll({
+        include: [{
+            model: Party,
+            as: 'party'
+        }]
+    })
+    .then((users) => {
+        users.forEach(element => {
+            var user1 = new party.UserDTO();
+            user1.id = element.id;
+            user1.name = element.party.name;
+            user1.lastName = "";
         });
+        next();
+    })
+    .catch((err)=>{
+        console.log(err);
+        realDrivers = null
+    });
+};
+
+
+/**
+ * Drivers
+ */
+
+exports.findAllDrivers = function findAllDrivers() {
+    console.info("partyServiceMock: findAllDrivers");
+    if (realDrivers != null) {
+        return realDrivers;
+    }
+};
+
+exports.loadDrivers = function loadDrivers(req, res, next) {
+    Driver.findAll({
+        include: [{
+            model: Party,
+            as: 'party'
+        }]
+    })
+    .then((drivers) => {
+        var i = 0;
+        var total = drivers.length;
+        drivers.forEach(element => {
+            i++;
+            var driver = new party.DriverDTO();
+            driver.id = element.id;
+            driver.name = element.party.name;
+            driver.lastName = "";
+            driver.license = element.licenseNumber;
+            driver.pointsCategory = getPointsByAmountTravels(element.travelAmount);
+            var scorePromedio = element.totalScore/element.scoreQuantity;
+            driver.score =scorePromedio;
+            driver.prioriry = scorePromedio+driver.pointsCategory;
+            driver.amountTravels = element.travelAmount;
+            realDrivers.push(driver);
+        });
+        next();
+    })
+    .catch((err)=>{
+        console.log(err);
+        realDrivers = null
     });
 };
 
@@ -180,3 +127,42 @@ function getPointsByAmountTravels(amountTravels) {
         return pointsPremiumCategory;
     }
 }
+
+/**
+ * Positions Driver
+ */
+
+//var geo = new travel.GeographicCoordenate({latitude:-34.6986,longitude:-58.49});
+/*var geo = new travel.GeographicCoordenate({latitude:-34.69,longitude:-58.4301});
+allDrivers.set(1,geo);
+geo = new travel.GeographicCoordenate({latitude:-34.75,longitude:-58.438});
+allDrivers.set(2,geo);
+geo = new travel.GeographicCoordenate({latitude:-34.3,longitude:-58});
+allDrivers.set(3,geo);
+console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
+
+//var geo = new travel.GeographicCoordenate({latitude:-34.6986,longitude:-58.49});
+
+/*var geo = new travel.GeographicCoordenate({latitude:-54.69,longitude:-58.4301});
+allDrivers.set(1,geo);
+geo = new travel.GeographicCoordenate({latitude:-54.75,longitude:-58.438});
+allDrivers.set(2,geo);
+geo = new travel.GeographicCoordenate({latitude:-54.3,longitude:-58});
+allDrivers.set(3,geo);
+console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
+
+Driver
+.findAll()
+.then(drivers => {
+    var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
+    allDrivers.set(drivers[2].id, geo);
+    geo = new travel.GeographicCoordenate({ latitude: -34.691, longitude: -58.4345 });
+    allDrivers.set(drivers[1].id, geo);
+    geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
+    allDrivers.set(drivers[0].id, geo);
+    console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
+    console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
+
+    exports.allDriversMock = allDrivers;
+})
+.catch((error) => console.log(error));
