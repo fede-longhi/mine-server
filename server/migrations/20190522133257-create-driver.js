@@ -40,6 +40,16 @@ module.exports = {
                     key: 'id',
                     as: 'partyId',
                 },
+            },
+            location: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+                onDelete: 'SET NULL',
+                references: {
+                    model: 'Addresses',
+                    key: 'id',
+                    as: 'location',
+                }, 
             }
         });
     },
