@@ -3,36 +3,37 @@
 var party = require("../../dtos/request/partyDTO");
 var travel = require("../../dtos/model/travel");
 const Driver = require("../../models").Driver;
+const Party = require('../../models').Party;
+const User = require("../../models").User;
 
-var drivers = null;
-var users = null;
+var realDrivers = new Array;
 
-exports.findAllDrivers = function findAllDrivers() {
+/*exports.findAllDrivers = function findAllDrivers() {
     console.info("partyServiceMock: findAllDrivers");
     if (drivers == null) {
         var driver1 = new party.DriverDTO();
         driver1.id = "987654322";
-        driver1.name = "Homero";
-        driver1.lastName = "Simpson";
-        driver1.license = "123";
+        driver1.name = "Michael Schumacher";
+        driver1.lastName = "Schumacher";
+        driver1.license = "999999991";
         driver1.pointsCategory = "0.5";
         driver1.score = "4";
         driver1.prioriry = "4.5";
         driver1.amountTravels = "20";
         var driver2 = new party.DriverDTO();
         driver2.id = "987654321";
-        driver2.name = "Federico";
-        driver2.lastName = "Longhi";
-        driver2.license = "123";
+        driver2.name = "Juan Manuel Fangio";
+        driver2.lastName = "Fangio";
+        driver2.license = "999999992";
         driver2.pointsCategory = "0.7";
         driver2.score = "4";
         driver2.prioriry = "4.7";
         driver2.amountTravels = "50";
         var driver3 = new party.DriverDTO();
         driver3.id = "987654399";
-        driver3.name = "Cosme";
-        driver3.lastName = "fulanito";
-        driver3.license = "123";
+        driver3.name = "Lewis Hamilton";
+        driver3.lastName = "Hamilton";
+        driver3.license = "999999993";
         driver3.pointsCategory = "1";
         driver3.score = "3.7";
         driver3.prioriry = "4.7";
@@ -43,6 +44,13 @@ exports.findAllDrivers = function findAllDrivers() {
         drivers.push(driver3);
     }
     return drivers;
+};*/
+
+exports.findAllDrivers = function findAllDrivers() {
+    console.info("partyServiceMock: findAllDrivers");
+    if (realDrivers != null) {
+        return realDrivers;
+    }
 };
 
 var allDrivers = new Map();
@@ -108,3 +116,67 @@ exports.findAllUsers = function findAllUsers() {
     }
     return users;
 };
+
+exports.findAllRealDrivers = function findAllRealDrivers() {
+    return new Promise((resolve) =>{
+        Driver.findAll({
+            include: [{
+                model: Party,
+                as: 'party'
+            }]
+        })
+        .then((drivers) => {
+            var i = 0;
+            var total = drivers.length;
+            drivers.forEach(element => {
+                i++;
+                var driver2 = new party.DriverDTO();
+                driver2.id = element.id;
+                driver2.name = element.party.name;
+                driver2.lastName = "";
+                driver2.license = element.licenseNumber;
+                driver2.pointsCategory = getPointsByAmountTravels(element.travelAmount);
+                var scorePromedio = element.totalScore/element.scoreQuantity;
+                driver2.score =scorePromedio;
+                driver2.prioriry = scorePromedio+driver2.pointsCategory;
+                driver2.amountTravels = element.travelAmount;
+                realDrivers.push(driver2);
+                //console.log(driver2)
+                if(i === total){
+                    console.log("###########&%/%&$##/&&/(&7");
+                    resolve(0);
+                }
+            });
+        })
+        .catch((err)=>{
+            console.log(err);
+            realDrivers = null
+        });
+    });
+};
+
+
+function getPointsByAmountTravels(amountTravels) {
+    const lowCategory = 9;
+    const basicCategory = 49;
+    const mediumCategory = 99;
+    const highCategory = 499;
+
+    const pointsLowCategory = 0.2;
+    const pointsBasicCategory = 0.5;
+    const pointsMediumCategory = 0.7;
+    const pointsHighCategory = 0.9;
+    const pointsPremiumCategory = 1;
+
+    if (amountTravels <= lowCategory) {
+        return pointsLowCategory;
+    } else if (amountTravels <= basicCategory) {
+        return pointsBasicCategory;
+    } else if (amountTravels <= mediumCategory) {
+        return pointsMediumCategory;
+    } else if (amountTravels <= highCategory) {
+        return pointsHighCategory;
+    } else {
+        return pointsPremiumCategory;
+    }
+}
