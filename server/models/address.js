@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     latitude: DataTypes.DOUBLE,
     longitude: DataTypes.DOUBLE,
     name: DataTypes.STRING
-  }, {});
+  }, {
+    timestamps: false,
+  });
   Address.associate = function(models) {
     // associations can be defined here
   };

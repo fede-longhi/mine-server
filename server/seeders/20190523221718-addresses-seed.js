@@ -6,17 +6,13 @@ module.exports = {
       {
         latitude: 14.09,
         longitude: 14.09,
-        name: "avenida siempreviva 123, springfield",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "avenida siempreviva 123, springfield"
         
       },
       {
         latitude: 14.32,
         longitude: 14.32,
-        name: "calle falsa 123, springfield",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "calle falsa 123, springfield"
       }
     ])
   },
