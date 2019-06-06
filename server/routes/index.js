@@ -9,6 +9,7 @@ const driverScoresController = require('../controllers').driverscores;
 const addressesController = require('../controllers').addresses;
 const credentialsController = require('../controllers').credentials;
 const fileDocumentsController = require('../controllers').fileDocuments;
+const partyServiceMock = require('../mock/mockData/partyServiceMock');
 
 module.exports = (app) => {
     app.post('/travel/cotization', travelsController.simulateQuote);
@@ -63,7 +64,7 @@ module.exports = (app) => {
     app.post('/api/travels', travelsController.create);
     app.get('/api/travels', travelsController.list);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
-    app.post('/api/travels/simulateQuote', travelsController.simulateQuote);
+    app.post('/api/travels/simulateQuote', partyServiceMock.loadDrivers ,travelsController.simulateQuote);
     
     app.get('/api/travels/:travelId', travelsController.retrieve);
     app.put('/api/travels/:travelId', travelsController.update);

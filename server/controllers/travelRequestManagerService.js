@@ -2,13 +2,18 @@ var allSockets = require("../../bin/www");
 var haversine = require("haversine");
 var travelDTOModel = require("../dtos/request/travelDTO");
 var driversMock = require("../mock/mockData/partyServiceMock");
+require("custom-env").env("pmm");
 const Travel = require('../models/').Travel;
 const Driver = require("../models").Driver;
 const Address = require("../models").Address;
+const IS_MOCK = process.env.IS_MOCK === "true";
 
 //to obtain the response of driver
-var travelResource = require("../controllers/travels");
 var travelService = require("../mock/travelServiceMock");
+
+//to save response of driver to travel
+var responseOfDriverToTravels = new Map();
+
 
 const aTravelMock = {
     "driverId": 0,
@@ -20,10 +25,7 @@ const aTravelMock = {
     "to": { "latitude": -34.5886603, "longitude": -58.4391604 },
     "travelId": 0,
     "userId": 0
-}
-
-
-var responseOfDriverToTravels = new Map();
+};
 
 function addResponse(idDriver, response) {
     try {
@@ -35,35 +37,17 @@ function addResponse(idDriver, response) {
     }
 }
 
-/*function manageTravelRequest(travelId){
-//the user has solicited a travel
-//executed thread
-
-    console.log("llamaron a manage request: "+travelId);
-    threadManageTravel(travelId)
-    .then((value)=>{
-        console.log("####: valor: "+value);
-        return value;
-    });
-
-
-    /*console.log("init manageTravelRequest");
-    let slowProcess = iyem.create(()=>{
-        console.log("entra al thread manageTravelRequest");
-            threadManageTravel();
-            $.finish(0); 
-    });
-
-    slowProcess.start(time).onFinish((result)=>{
-        console.log("response:" +result);
-    });*/
-//}
-
 
 function manageTravelRequest(travelId) {
     console.log("######### ###########  ###########");
     console.log("#########   INICIO     ###########");
     console.log("######### ###########  ###########");
+
+    if (IS_MOCK) {
+        console.log("######### ############### ###########");
+        console.log("######### Esto es un Mock ###########");
+        console.log("######### ############### ###########");
+    }
 
     return new Promise((resolve, reject) => {
         var radiusA = 2000;
@@ -149,7 +133,7 @@ function manageTravelRequest(travelId) {
                             var aTravelNotificationDTO = new travelDTOModel.TravelNotificationDTO();
                             aTravelNotificationDTO.travelId = aTravel.id;
 
-                            if (process.env.IS_MOCK) {
+                            if (IS_MOCK) {
                                 aTravelNotificationDTO.from = aTravelMock.from;
                                 aTravelNotificationDTO.to = aTravelMock.to;
                             } else {
@@ -263,7 +247,7 @@ function manageTravelRequest(travelId) {
                             })
                             .catch((value) => {
                                 console.log("No se encontró el chofer incrementando el radio a " + allRadius[indexRadius]);
-                                console.log("valor del reject=========: " + value);
+                                console.log("codigo de salida de búsqueda =========: " + value);
                                 rejectBucle(value);
                             });
                         }
@@ -333,7 +317,7 @@ function manageTravelRequest(travelId) {
  */
 
 function findBestDriver(travelId, searchRadius, excludedDrivers, travel) {
-    console.info("travelRequestMAnager: " + "findDriver. travelId: " + travelId);
+    console.log("FIND DRIVER TO TRAVEL: "+JSON.stringify(travel));
     var candidateDrivers = new Array();
 
     // find optimum driver for user
@@ -348,73 +332,61 @@ function findBestDriver(travelId, searchRadius, excludedDrivers, travel) {
     console.log("cantidad de choferes mandando posiciones: " + positionsDrivers.size);
     console.log("BUSCANDO CHOFERES con un RADIO en metros de: " + searchRadius);
 
-    /*if (process.env.IS_MOCK) {*/
-        var aTravel = {
-            "driverId": 0,
-            "from": { "latitude": -34.69, "longitude": -58.434 },
-            "hasACompanion": true,
-            "petAmountLarge": 1,
-            "petAmountMedium": 1,
-            "petAmountSmall": 0,
-            "to": { "latitude": -34.5886603, "longitude": -58.4391604 },
-            "travelId": 0,
-            "userId": 0
+    if (IS_MOCK) {
+        var from = aTravelMock.from;
+        var to = aTravelMock.to;
+    } else {
+        var from = travel.from;
+        var to = travel.to;
+    }
+
+    var candidateDrivers = [];
+
+    positionsDrivers.forEach((value, key) => {
+        distance = haversine(value, from, { unit: 'meter' });
+        console.log("latitude Driver: " + value.latitude);
+        console.log("longitude Driver: " + value.longitude);
+        console.log("latitude origin " + from.latitude);
+        console.log("longitude origin " + from.longitude);
+        console.log("distancia: " + distance);
+        if (distance < searchRadius) {
+            //obtain driver to evaluate his score
+            console.log("El chofer está dentro del radio de búsqueda");
+            var aDriver = travelService.findDriver(key);
+            candidateDrivers.push(aDriver);
         }
-        /*if (process.env.IS_MOCK) {
-            aTravelNotificationDTO.from = aTravelMock.from;
-            aTravelNotificationDTO.to = aTravelMock.to;
-        } else {
-            aTravelNotificationDTO.from = aTravel.from;
-            aTravelNotificationDTO.to = aTravel.to;
-        }*/
+    });
     
-        var candidateDrivers = [];
-    
-        positionsDrivers.forEach((value, key) => {
-            distance = haversine(value, aTravel.from, { unit: 'meter' });
-            console.log("latitude Driver: " + value.latitude);
-            console.log("longitude Driver: " + value.longitude);
-            console.log("latitude origin " + aTravel.from.latitude);
-            console.log("longitude origin " + aTravel.from.latitude);
-            console.log("distancia: " + distance);
-            if (distance < searchRadius) {
-                //obtain driver to evaluate his score
-                console.log("El chofer está dentro del radio de búsqueda");
-                var aDriver = travelService.findDriver(key);
-                candidateDrivers.push(aDriver);
-            }
+    console.log("*** terminó la búsqueda de choferes ***");
+
+    if (candidateDrivers.length == 0) {
+        console.log("No se encontraron choferes candidatos en el radio: " + searchRadius);
+        return null;
+    } else {
+        console.log("Antes de excluir choferes que rechazaron el viaje hay: " + candidateDrivers.length + " choferes");
+    }
+
+    //take out excluded drivers
+    if (excludedDrivers != null) {
+        excludedDrivers.forEach(driverID => {
+            console.log("chofer excluido con id: " + driverID);
+            //find index of driver with id
+            index = candidateDrivers.findIndex(driver => {
+                    return driver.id == driverID;
+            })
+            //remove driver
+            candidateDrivers.splice(index, 1);
         });
-    
-        console.log("*** terminó la búsqueda de choferes ***");
-    
-        if (candidateDrivers.length == 0) {
-            console.log("No se encontraron choferes candidatos en el radio: " + searchRadius);
-            return null;
-        } else {
-            console.log("Antes de excluir choferes que rechazaron el viaje hay: " + candidateDrivers.length + " choferes");
-        }
-    
-        //take out excluded drivers
-        if (excludedDrivers != null) {
-            excludedDrivers.forEach(driverID => {
-                console.log("chofer excluido con id: " + driverID);
-                //find index of driver with id
-                index = candidateDrivers.findIndex(driver => {
-                        return driver.id == driverID;
-                    })
-                    //remove driver
-                candidateDrivers.splice(index, 1);
-            });
-        }
-    
-        if (candidateDrivers.length == 0) {
-            console.log("No queadaron choferes Luego de haber excluir Choferes en el radio de búsqueda: " + searchRadius);
-            return null;
-        } else {
-            console.log("Luego de haber excluido quedaron: " + candidateDrivers.length + " choferes");
-        }
-    
-        return getBestDriver(candidateDrivers);
+    }
+
+    if (candidateDrivers.length == 0) {
+        console.log("No queadaron choferes Luego de haber excluir Choferes en el radio de búsqueda: " + searchRadius);
+        return null;
+    } else {
+        console.log("Luego de haber excluido quedaron: " + candidateDrivers.length + " choferes");
+    }
+
+    return getBestDriver(candidateDrivers);
 }
 
 module.exports = {
