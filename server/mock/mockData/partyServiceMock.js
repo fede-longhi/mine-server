@@ -161,15 +161,15 @@ console.log("cantidad de elementos mock pos: "+allDrivers.size);*/
 Driver
 .findAll()
 .then(drivers => {
-    /*var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
+    var geo = new travel.GeographicCoordenate({ latitude: -34.689, longitude: -58.4345 });
     allDrivers.set(drivers[2].id, geo);
     geo = new travel.GeographicCoordenate({ latitude: -34.691, longitude: -58.4345 });
     allDrivers.set(drivers[1].id, geo);
     geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
-    allDrivers.set(drivers[0].id, geo);*/
-    geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
+    allDrivers.set(drivers[0].id, geo);
+    /*geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
     allDrivers.set(drivers[3].id, geo);
-    console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
+    console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);*/
     console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
 
     exports.allDriversMock = allDrivers;
