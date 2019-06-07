@@ -99,7 +99,7 @@ function manageTravelRequest(travelId) {
                         console.log("se ha encontrado al mejor chofer con id: " + aDriverSelected.id);
 
                         //obtaining socket of driver
-                        var connectionDrivers = allSockets.connectionDrivers;
+                        /*var connectionDrivers = allSockets.connectionDrivers;
                         var aConnectionDriver = null;
                         try {
                             if (connectionDrivers != undefined) {
@@ -124,7 +124,7 @@ function manageTravelRequest(travelId) {
                             console.error("Driver selected now is dissconnected, id: " + aDriverSelected.id);
                             console.error("No se pudo obtener el socket del chofer");
                             rejectBucle(REJECT_ERROR);
-                        } else {
+                        } else {*/
 
                             console.info("Driver selected is available");
                             console.info("Datos del viaje: " + JSON.stringify(aTravel));
@@ -147,7 +147,7 @@ function manageTravelRequest(travelId) {
                             aTravelNotificationDTO.hasCompanion = aTravel.hasCompanion;
 
                             //notify to driver
-                            aConnectionDriver.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelNotificationDTO);
+                            //aConnectionDriver.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelNotificationDTO);
                             console.info("Se notificó el viaje al Chofer");
 
                             //map donde se almacenan las respuestas de los choferes
@@ -229,7 +229,7 @@ function manageTravelRequest(travelId) {
                                 }
 
                             });
-                        }
+                        //}
 
                     } else {
                         //driver not found, increase the radius... se tiene que ver

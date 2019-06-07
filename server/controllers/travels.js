@@ -184,60 +184,53 @@ module.exports = {
     },
 
     simulateQuote(req, res) {
-        /*partyServiceMock.findAllRealDrivers()
-        .then( (code) =>{*/
-            console.log("DATA: " + JSON.stringify(req.body));
-            var travel = Travel.build({
-                status: 'quoted',
-                smallPetQuantity: req.body.smallPetQuantity,
-                mediumPetQuantity: req.body.mediumPetQuantity,
-                bigPetQuantity: req.body.bigPetQuantity,
-                price: 0,
-                hasCompanion: req.body.hasCompanion,
-                userId: req.body.userId
-            });
-    
+        console.log("DATA: " + JSON.stringify(req.body));
+        var travel = Travel.build({
+            status: 'quoted',
+            smallPetQuantity: req.body.smallPetQuantity,
+            mediumPetQuantity: req.body.mediumPetQuantity,
+            bigPetQuantity: req.body.bigPetQuantity,
+            price: 0,
+            hasCompanion: req.body.hasCompanion,
+            userId: req.body.userId
+        });
+
+        Address.create({
+                latitude: req.body.from.latitude,
+                longitude: req.body.from.longitude
+        })
+        .then(from => {
             Address.create({
-                    latitude: req.body.from.latitude,
-                    longitude: req.body.from.longitude
+                    latitude: req.body.to.latitude,
+                    longitude: req.body.to.longitude
                 })
-                .then(from => {
-                    Address.create({
-                            latitude: req.body.to.latitude,
-                            longitude: req.body.to.longitude
-                        })
-                        .then(to => {
-                            travel.from = from;
-                            travel.to = to;
-                            travel.fromId = from.id;
-                            travel.toId = to.id;
-                            travel.quote().then(travelPrice => {
-                                travel.price = Math.round(travelPrice);;
-                                travel.save()
-                                    .then(travel => res.status(200).send(travel))
-                                    .catch(error => {
-                                        console.log(error.message);
-                                        res.status(500).send(error);
-                                    });
-                            }).catch(error => {
+                .then(to => {
+                    travel.from = from;
+                    travel.to = to;
+                    travel.fromId = from.id;
+                    travel.toId = to.id;
+                    travel.quote().then(travelPrice => {
+                        travel.price = Math.round(travelPrice);;
+                        travel.save()
+                            .then(travel => res.status(200).send(travel))
+                            .catch(error => {
                                 console.log(error.message);
                                 res.status(500).send(error);
                             });
-                        })
-                        .catch(error => {
-                            console.log(error.message);
-                            res.status(500).send(error);
-                        });
+                    }).catch(error => {
+                        console.log(error.message);
+                        res.status(500).send(error);
+                    });
                 })
                 .catch(error => {
                     console.log(error.message);
                     res.status(500).send(error);
                 });
-        /*})
-        .catch( (err) => {
-            console.log("error en la carga de choferres");
-            console.log(err);
-        })*/
+        })
+        .catch(error => {
+            console.log(error.message);
+            res.status(500).send(error);
+        });
     },
 
     confirmation(req, res) {
@@ -289,6 +282,9 @@ module.exports = {
                     aTravelConfirmationResponseDTO.travelId = travelId;
                     aTravelConfirmationResponseDTO.time = "123";
                     aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
+
+                    //add distance and time
+
                     res.status(200).send(aTravelConfirmationResponseDTO);
                 })
                 .catch((err => res.status(500).send(err)));
