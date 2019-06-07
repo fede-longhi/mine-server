@@ -95,6 +95,7 @@ module.exports = {
                                         if (req.query.name != null && req.query.name != undefined) {
                                             fileDocumentAux = fileDocuments.filter(fd => fd.name == req.query.name);
                                         }
+                                        //var data = JSON.stringify(fileDocumentAux);
                                         return res.status(200).send(fileDocumentAux);
                                     })
                                     .catch(error => res.status(400).send(error));
