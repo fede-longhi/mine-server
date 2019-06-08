@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     });
     Driver.belongsTo(models.Address, {
       as: "location",
+    });
+    Driver.belongsTo(models.Vehicle, {
+      as: "vehicle",
     })
   };
   return Driver;

@@ -50,6 +50,16 @@ module.exports = {
                     key: 'id',
                     as: 'locationId',
                 }, 
+            },
+            vehicleId: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+                onDelete: 'SET NULL',
+                references: {
+                    model: 'Vehicles',
+                    key: 'id',
+                    as: 'vehicleId',
+                }, 
             }
         });
     },
