@@ -283,6 +283,9 @@ module.exports = {
                     aTravelConfirmationResponseDTO.time = "123";
                     aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
 
+
+                    console.log("$$$$$$$$$$: "+JSON.stringify(aTravelConfirmationResponseDTO));
+
                     //add distance and time
 
                     res.status(200).send(aTravelConfirmationResponseDTO);
