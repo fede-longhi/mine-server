@@ -41,14 +41,14 @@ module.exports = {
                     as: 'partyId',
                 },
             },
-            location: {
+            locationId: {
                 type: Sequelize.INTEGER,
                 allowNull: true,
                 onDelete: 'SET NULL',
                 references: {
                     model: 'Addresses',
                     key: 'id',
-                    as: 'location',
+                    as: 'locationId',
                 }, 
             }
         });
