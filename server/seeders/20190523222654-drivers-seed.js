@@ -32,6 +32,7 @@ module.exports = {
                 scoreQuantity: 10,
                 partyId: 1,
                 travelAmount: 600,
+                locationId: 1,
                 createdAt: new Date(),
                 updatedAt: new Date()
             },

@@ -32,12 +32,12 @@ module.exports = {
             hasCompanion: {
                 type: Sequelize.BOOLEAN
             },
-            // from: {
-            //     type: Sequelize.STRING
-            // },
-            // to: {
-            //     type: Sequelize.STRING
-            // },
+            estimatedArrivalTime: {
+                type: Sequelize.DOUBLE
+            },
+            driverDistance: {
+                type: Sequelize.DOUBLE
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
