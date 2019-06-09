@@ -57,6 +57,7 @@ module.exports = {
     },
 
     list(req, res) {
+        console.log('Find all');
         return Travel
             .findAll({
                 include: [{
@@ -71,6 +72,31 @@ module.exports = {
             })
             .then((travels) => res.status(200).send(travels))
             .catch(error => res.status(400).send(error.message));
+    },
+
+    findByPk(req, res) {
+        console.log('Find By PK: ' + req.query.travelId);
+        return Travel
+        .findByPk(req.query.travelId, {
+            include: [{
+                    model: Address,
+                    as: 'from'
+                },
+                {
+                    model: Address,
+                    as: 'to'
+                }
+            ]
+        })
+        .then(travel => {
+            if (!travel) {
+                return res.status(404).send({
+                    message: 'Travel Not Found',
+                });
+            }
+            return res.status(200).send(travel);
+        })
+        .catch(error => res.status(400).send(error));
     },
 
     retrieve(req, res) {
@@ -104,9 +130,8 @@ module.exports = {
                     return res.status(200).send(travel);
                 })
                 .catch(error => res.status(400).send(error));
-            } else {
-                if (hasStartDate && hasEndDate && hasStatus && hasUserId && hasDriverId) {
-                    return Travel
+            } else if (hasStartDate && hasEndDate && hasStatus && hasUserId && hasDriverId) {
+                return Travel
                         .findAll({
                             include: [{
                                     model: Address,
@@ -124,7 +149,103 @@ module.exports = {
                         })
                         .then((travels) => res.status(200).send(travels))
                         .catch(error => res.status(400).send(error.message));
-                }
+            } else if (hasStartDate && hasEndDate) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: { createdAt:  {[Op.between]:  [req.query.startDate,req.query.endDate]}}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else if (hasStartDate) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: { createdAt:  {[Op.gte]:  req.query.startDate}}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else if (hasEndDate) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: { createdAt:  {[Op.lte]:  req.query.endDate}}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else if (hasStatus) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: {status: req.query.status}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else if (hasDriverId) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: {driverId: req.query.driverId}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else if (hasUserId) {
+                return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: {userId: req.query.userId}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+            } else {
                 return res.status(200).send(JSON.stringify((hasStartDate.toString() + hasEndDate.toString() + hasStatus.toString() + hasUserId.toString() + hasDriverId.toString())));
             }
         } else {
