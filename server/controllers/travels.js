@@ -288,7 +288,7 @@ module.exports = {
                 }
                 travel.getDriverDistanceToDestiny()
                 .then( newTravelStatus => {
-                    return res.status(200).send(newTravelStatus);
+                    res.status(200).send(newTravelStatus);
                 })
                 .catch(error => res.status(500).send(error.message));
             })
@@ -344,7 +344,7 @@ module.exports = {
                         driverId: req.body.driverId,
                         userId: req.body.userId
                     })
-                    .then((travel) => res.status(200).send(travel)) // Send back the updated todo.
+                    .then((travel) => res.status(200).send(travel))
                     .catch((error) => res.status(400).send(error));
             })
             .catch((error) => res.status(400).send(error));
@@ -445,7 +445,7 @@ module.exports = {
                     try {
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                        aTravelConfirmationResponseDTO.time = "123" //travel.time;
+                        aTravelConfirmationResponseDTO.time = "" //travel.time;
 
                         /*hay que reemplazar el find user*/
                         aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
@@ -478,7 +478,7 @@ module.exports = {
                     Travel.update({ "status": TRAVEL_ACCEPTED_BY_DRIVER }, { where: { "id": travel.id } });
                     var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                     aTravelConfirmationResponseDTO.travelId = travelId;
-                    aTravelConfirmationResponseDTO.time = "123";
+                    aTravelConfirmationResponseDTO.time = "";
                     aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
 
 
