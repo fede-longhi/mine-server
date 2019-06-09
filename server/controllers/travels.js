@@ -468,7 +468,7 @@ module.exports = {
                     try {
                         var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                         aTravelConfirmationResponseDTO.travelId = aTravelConfirmationRequestDTO.travelId;
-                        aTravelConfirmationResponseDTO.time = "123" //travel.time;
+                        aTravelConfirmationResponseDTO.time = "" //travel.time;
 
                         /*hay que reemplazar el find user*/
                         aTravelConfirmationResponseDTO.driver = travelService.findDriver(travel.driverId);
@@ -501,7 +501,7 @@ module.exports = {
                     Travel.update({ "status": TRAVEL_ACCEPTED_BY_DRIVER }, { where: { "id": travel.id } });
                     var aTravelConfirmationResponseDTO = new travelDTO.TravelConfirmationResponseDTO();
                     aTravelConfirmationResponseDTO.travelId = travelId;
-                    aTravelConfirmationResponseDTO.time = "123";
+                    aTravelConfirmationResponseDTO.time = "";
                     aTravelConfirmationResponseDTO.user = travelService.findUser(travel.userId);
 
 

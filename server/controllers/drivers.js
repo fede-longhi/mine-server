@@ -157,9 +157,6 @@ module.exports = {
             })
             .then( address => {
                 driver.locationId = address.id;
-                console.log('location');
-                console.log(address.longitude);
-                console.log(address.latitude);
                 driver.save()
                 .then( () => {
                     res.status(200).send();

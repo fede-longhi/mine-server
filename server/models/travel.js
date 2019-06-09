@@ -105,14 +105,11 @@ module.exports = (sequelize, DataTypes) => {
   Travel.prototype.getDriverDistanceToDestiny = function(){
     var travel = this;
     return new Promise(function(resolve, reject){
-      console.log('Travel status: ' + travel.status);
       if (travel.status == 'on course'){
         sequelize.models.Driver.findByPk(travel.driverId)
         .then(driver => {
           sequelize.models.Address.findByPk(driver.locationId)
           .then(driverPosition => {
-            console.log('driverPosition');
-            console.log(driverPosition);
             var origin = driverPosition.latitude.toString() + ',' + driverPosition.longitude.toString();
             var destination = travel.to.latitude.toString() + ',' + travel.to.longitude.toString();            
             
