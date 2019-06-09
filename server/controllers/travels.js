@@ -100,7 +100,7 @@ module.exports = {
     },
 
     retrieve(req, res) {
-        console.log('Request find by query params FileDocument: ' + JSON.stringify(req.query));
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
         if (Object.keys(req.query).length > 0) {
             var travelId = (!!req.query.travelId);
             var hasStartDate = (!!req.query.startDate);
