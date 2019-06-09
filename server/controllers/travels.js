@@ -190,7 +190,7 @@ module.exports = {
                 }
                 travel.getDriverDistanceToDestiny()
                 .then( newTravelStatus => {
-                    return res.status(200).send(newTravelStatus);
+                    res.status(200).send(newTravelStatus);
                 })
                 .catch(error => res.status(500).send(error.message));
             })
@@ -246,7 +246,7 @@ module.exports = {
                         driverId: req.body.driverId,
                         userId: req.body.userId
                     })
-                    .then((travel) => res.status(200).send(travel)) // Send back the updated todo.
+                    .then((travel) => res.status(200).send(travel))
                     .catch((error) => res.status(400).send(error));
             })
             .catch((error) => res.status(400).send(error));

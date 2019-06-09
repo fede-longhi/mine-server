@@ -25,10 +25,16 @@ module.exports = {
     list(req, res) {
         return Driver
             .findAll({
-                include: [{
-                    model: Party,
-                    as: 'party'
-                }]
+                include: [
+                    {
+                        model: Party,
+                        as: 'party'
+                    },
+                    {
+                        model: Address,
+                        as: 'location'
+                    }
+                ]
             })
             .then((drivers) => res.status(200).send(drivers))
             .catch((error) => res.status(400).send(error));
@@ -151,6 +157,9 @@ module.exports = {
             })
             .then( address => {
                 driver.locationId = address.id;
+                console.log('location');
+                console.log(address.longitude);
+                console.log(address.latitude);
                 driver.save()
                 .then( () => {
                     res.status(200).send();

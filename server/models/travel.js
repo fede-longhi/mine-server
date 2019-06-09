@@ -79,13 +79,10 @@ module.exports = (sequelize, DataTypes) => {
     var travel = this;
     return new Promise(function(resolve, reject){
       if (travel.status == 'on course'){
-        console.log('travel status');
         Driver.findByPk(travel.driverId)
         .then(driver => {
-          console.log('Get driver');
           Address.findByPk(driver.locationId)
           .then(driverPosition => {
-            console.log('Here i am');
             var origin = driverPosition.latitude.toString() + ',' + driverPosition.longitude.toString();
             var destination = travel.from.latitude.toString() + ',' + travel.from.longitude.toString();
             distanceUtil.getDistance(origin, destination)
@@ -93,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
               travel.estimatedArrivalTime = distanceElements.duration.value / 60; //minutos
               travel.driverDistance = istanceElements.distance.value/1000; // km
               travel.save()
-              .then( travel => resolve(travel))
+              .then(travel => resolve(travel))
               .catch(error => reject(error));
             })
             .catch(error => reject(error));
@@ -108,19 +105,24 @@ module.exports = (sequelize, DataTypes) => {
   Travel.prototype.getDriverDistanceToDestiny = function(){
     var travel = this;
     return new Promise(function(resolve, reject){
+      console.log('Travel status: ' + travel.status);
       if (travel.status == 'on course'){
         sequelize.models.Driver.findByPk(travel.driverId)
         .then(driver => {
           sequelize.models.Address.findByPk(driver.locationId)
           .then(driverPosition => {
+            console.log('driverPosition');
+            console.log(driverPosition);
             var origin = driverPosition.latitude.toString() + ',' + driverPosition.longitude.toString();
-            var destination = travel.to.latitude.toString() + ',' + travel.to.longitude.toString();
+            var destination = travel.to.latitude.toString() + ',' + travel.to.longitude.toString();            
+            
             distanceUtil.getDistance(origin, destination)
             .then(distanceElements => {
-              travel.estimatedArrivalTime = distanceElements.duration.value / 60; //minutos
-              travel.driverDistance = istanceElements.distance.value/1000; // km
+              travel.estimatedArrivalTime = distanceElements.duration.value/60; //minutos
+              travel.driverDistance = distanceElements.distance.value/1000; // km  
+              
               travel.save()
-              .then( travel => resolve(travel))
+              .then(travel => resolve(travel))
               .catch(error => reject(error));
             })
             .catch(error => reject(error));

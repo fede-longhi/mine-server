@@ -6,8 +6,6 @@ module.exports = {
     getDistance(origin, destination){
         var origins = [origin,];
         var destinations = [destination,];
-        console.log(origin);
-        console.log(destination);
         return new Promise(function(resolve, reject){
             distance.matrix(origins, destinations, function (err, distances) {
                 if (err) {
@@ -19,7 +17,6 @@ module.exports = {
                 if (distances.status == 'OK') {
                     var origin = distances.origin_addresses[0];
                     var destination = distances.destination_addresses[0];
-                    console.log(distances.rows[0].elements[0].status);
                     if (distances.rows[0].elements[0].status == 'OK') {
                         resolve(distances.rows[0].elements[0]);
                     }else {

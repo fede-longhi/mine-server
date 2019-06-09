@@ -63,6 +63,7 @@ module.exports = (app) => {
 
     // ********************* TRAVELS *************************
     app.get('/api/travelStatus/:travelId', travelsController.getTravelStatus);
+    
     app.post('/api/travels', travelsController.create);
     app.get('/api/travels', travelsController.retrieve);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
