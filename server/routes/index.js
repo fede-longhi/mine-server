@@ -62,11 +62,10 @@ module.exports = (app) => {
 
     // ********************* TRAVELS *************************
     app.post('/api/travels', travelsController.create);
-    app.get('/api/travels', travelsController.list);
+    app.get('/api/travels', travelsController.retrieve);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
     app.post('/api/travels/simulateQuote', partyServiceMock.loadDrivers ,travelsController.simulateQuote);
     
-    app.get('/api/travels/:travelId', travelsController.retrieve);
     app.put('/api/travels/:travelId', travelsController.update);
     app.delete('/api/travels/:travelId', travelsController.destroy);
     app.post('/api/travels/confirmation',travelsController.confirmation);

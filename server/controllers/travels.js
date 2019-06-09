@@ -1,7 +1,7 @@
 const partyServiceMock =  require('../mock/mockData/partyServiceMock');
 
 
-
+const Op = require('../models/index').Sequelize.Op;
 const Travel = require('../models/').Travel;
 const Address = require('../models').Address;
 
@@ -74,6 +74,78 @@ module.exports = {
     },
 
     retrieve(req, res) {
+        console.log('Request find by query params FileDocument: ' + JSON.stringify(req.query));
+        if (Object.keys(req.query).length > 0) {
+            var travelId = (!!req.query.travelId);
+            var hasStartDate = (!!req.query.startDate);
+            var hasEndDate = (!!req.query.endDate);
+            var hasStatus = (!!req.query.status);
+            var hasUserId = (!!req.query.userId);
+            var hasDriverId = (!!req.query.driverId);
+            if (travelId) {
+                return Travel
+                .findByPk(req.query.travelId, {
+                    include: [{
+                            model: Address,
+                            as: 'from'
+                        },
+                        {
+                            model: Address,
+                            as: 'to'
+                        }
+                    ]
+                })
+                .then(travel => {
+                    if (!travel) {
+                        return res.status(404).send({
+                            message: 'Travel Not Found',
+                        });
+                    }
+                    return res.status(200).send(travel);
+                })
+                .catch(error => res.status(400).send(error));
+            } else {
+                if (hasStartDate && hasEndDate && hasStatus && hasUserId && hasDriverId) {
+                    return Travel
+                        .findAll({
+                            include: [{
+                                    model: Address,
+                                    as: 'from'
+                                },
+                                {
+                                    model: Address,
+                                    as: 'to'
+                                }
+                            ],
+                            where: { createdAt:  {[Op.between]:  [req.query.startDate,req.query.endDate]},
+                                    status: req.query.status,
+                                    driverId: req.query.driverId,
+                                    userId: req.query.userId}
+                        })
+                        .then((travels) => res.status(200).send(travels))
+                        .catch(error => res.status(400).send(error.message));
+                }
+                return res.status(200).send(JSON.stringify((hasStartDate.toString() + hasEndDate.toString() + hasStatus.toString() + hasUserId.toString() + hasDriverId.toString())));
+            }
+        } else {
+            console.log('Find all');
+            return Travel
+            .findAll({
+                include: [{
+                        model: Address,
+                        as: 'from'
+                    },
+                    {
+                        model: Address,
+                        as: 'to'
+                    }
+                ]
+            })
+            .then((travels) => res.status(200).send(travels))
+            .catch(error => res.status(400).send(error.message));
+        }
+
+
         return Travel
             .findByPk(req.params.travelId, {
                 include: [{
