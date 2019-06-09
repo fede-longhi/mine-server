@@ -39,8 +39,7 @@ exports.DriverSearchDTO = class DriverSearchDTO {
 var PartyDTO = class PartyDTO {
     constructor() {
         this.partyID;
-        this.firstName;
-        this.lastName;
+        this.name;
     }
 }
 

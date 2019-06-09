@@ -59,8 +59,8 @@ function manageTravelRequest(travelId) {
         var indexRadius = 0;
         var amountDriversNotified = 0;
         var MAXDRIVERSNOTIFICATIONS = 3
-        var AMOUNT_BUCLES_TO_WAIT = 6;
-        var TIME_TO_WAIT = 5000; //5 seconds
+        var AMOUNT_BUCLES_TO_WAIT = 10;
+        var TIME_TO_WAIT = 3000; //2 seconds
         var REJECT_ERROR = 0;
         var REJECT_DRIVER_REQUEST = 1;
         var REJECT_TIMEOUT = 2;

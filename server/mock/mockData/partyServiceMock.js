@@ -56,7 +56,6 @@ exports.loadUsers = function loadUsers(req, res, next) {
             var user = new party.UserDTO();
             user.id = element.id;
             user.name = element.party.name;
-            user.lastName = "";
             realUsers.push(user);
             console.log("USER: "+JSON.stringify(user));
         });
@@ -92,7 +91,6 @@ exports.loadDrivers = function loadDrivers(req, res, next) {
             var driver = new party.DriverDTO();
             driver.id = element.id;
             driver.name = element.party.name;
-            driver.lastName = "";
             driver.license = element.licenseNumber;
             driver.pointsCategory = getPointsByAmountTravels(element.travelAmount);
             var scorePromedio = element.totalScore/element.scoreQuantity;
