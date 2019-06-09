@@ -139,6 +139,27 @@ module.exports = {
         })
         .then((userScore) => res.status(200).send(userScore))
         .catch(error => res.status(400).send(error));
+    },
+
+    updatePosition(req, res){
+        return Driver
+        .findByPk(req.params.driverId)
+        .then( driver => {
+            Address.create({
+                latitude: req.body.latitude,
+                longitude: req.body.longitude
+            })
+            .then( address => {
+                driver.locationId = address.id;
+                driver.save()
+                .then( () => {
+                    res.status(200).send();
+                })
+                .catch(error => res.status(400).send(error));
+            })
+            .catch(error => res.status(400).send(error));
+        })
+        .catch(error => res.status(400).send(error));
     }
 
 }

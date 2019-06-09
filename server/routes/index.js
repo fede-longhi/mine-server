@@ -39,6 +39,7 @@ module.exports = (app) => {
     app.delete('/api/parties/:partyId', partiesController.destroy);
 
     // ****************** DRIVERS *******************
+    app.put('/api/driverPosition/:driverId', driversController.updatePosition);
     app.post('/api/drivers', driversController.create);
     app.get('/api/drivers', driversController.list);
     app.get('/api/drivers/:driverId', driversController.retrieve);
@@ -61,6 +62,7 @@ module.exports = (app) => {
     app.get('/api/users/:userId/givenScores', usersController.getScoresGiven);
 
     // ********************* TRAVELS *************************
+    app.get('/api/travelStatus/:travelId', travelsController.getTravelStatus);
     app.post('/api/travels', travelsController.create);
     app.get('/api/travels', travelsController.list);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
