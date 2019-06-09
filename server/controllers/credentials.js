@@ -75,7 +75,7 @@ module.exports = {
                                                         fileDocument.partyId = user.partyId;
                                                         FileDocument.create({
                                                                 name: fileDocument.name,
-                                                                extension: fileDocument.extension,
+                                                                extension: fileDocument.extension || "null",
                                                                 partyId: user.partyId,
                                                                 data: fileDocument.data})
                                                             .then(console.log("Create File Documente"))

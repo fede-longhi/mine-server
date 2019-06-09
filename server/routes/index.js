@@ -64,7 +64,7 @@ module.exports = (app) => {
     app.post('/api/travels', travelsController.create);
     app.get('/api/travels', travelsController.retrieve);
     app.get('/api/travels/quote/:travelId', travelsController.quote);
-    app.post('/api/travels/simulateQuote', partyServiceMock.loadDrivers ,travelsController.simulateQuote);
+    app.post('/api/travels/simulateQuote', partyServiceMock.loadDrivers,partyServiceMock.loadUsers,travelsController.simulateQuote);
     
     app.put('/api/travels/:travelId', travelsController.update);
     app.delete('/api/travels/:travelId', travelsController.destroy);

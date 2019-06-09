@@ -6,13 +6,14 @@ const Driver = require("../../models").Driver;
 const Party = require('../../models').Party;
 const User = require("../../models").User;
 var realDrivers = new Array;
+var realUsers = new Array;
 var allDrivers = new Map();
 
 /**
  * Users
  */
 
-exports.findAllUsers = function findAllUsers() {
+/*exports.findAllUsers = function findAllUsers() {
     console.info("partyServiceMock: findAllUsers");
     if (users == null) {
         var user1 = new party.UserDTO();
@@ -33,10 +34,16 @@ exports.findAllUsers = function findAllUsers() {
         users.push(user3);
     }
     return users;
+};*/
+
+exports.findAllUsers = function findAllUsers() {
+    if(realUsers != null)
+        return realUsers;
 };
 
 
 exports.loadUsers = function loadUsers(req, res, next) {
+    console.log("USER:---------------------------------> ");
     User.findAll({
         include: [{
             model: Party,
@@ -44,17 +51,19 @@ exports.loadUsers = function loadUsers(req, res, next) {
         }]
     })
     .then((users) => {
+        console.log("USER: "+JSON.stringify(users));
         users.forEach(element => {
-            var user1 = new party.UserDTO();
-            user1.id = element.id;
-            user1.name = element.party.name;
-            user1.lastName = "";
+            var user = new party.UserDTO();
+            user.id = element.id;
+            user.name = element.party.name;
+            realUsers.push(user);
+            console.log("USER: "+JSON.stringify(user));
         });
         next();
     })
     .catch((err)=>{
-        console.log(err);
-        realDrivers = null
+        console.error(err);
+        realUsers = null
     });
 };
 
@@ -78,14 +87,10 @@ exports.loadDrivers = function loadDrivers(req, res, next) {
         }]
     })
     .then((drivers) => {
-        var i = 0;
-        var total = drivers.length;
         drivers.forEach(element => {
-            i++;
             var driver = new party.DriverDTO();
             driver.id = element.id;
             driver.name = element.party.name;
-            driver.lastName = "";
             driver.license = element.licenseNumber;
             driver.pointsCategory = getPointsByAmountTravels(element.travelAmount);
             var scorePromedio = element.totalScore/element.scoreQuantity;
@@ -160,7 +165,9 @@ Driver
     allDrivers.set(drivers[1].id, geo);
     geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
     allDrivers.set(drivers[0].id, geo);
-    console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);
+    /*geo = new travel.GeographicCoordenate({ latitude: -34.690, longitude: -58.4345 });
+    allDrivers.set(drivers[3].id, geo);
+    console.log("cantidad de choferes con ID posta de DB : " + allDrivers.size);*/
     console.log(JSON.stringify(allDrivers, (key, value) => (value instanceof Map ? [...value] : value)));
 
     exports.allDriversMock = allDrivers;
