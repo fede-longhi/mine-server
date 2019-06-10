@@ -382,7 +382,6 @@ module.exports = {
     },
 
     simulateQuote(req, res) {
-        console.log("DATA: " + JSON.stringify(req.body));
         var travel = Travel.build({
             status: 'quoted',
             smallPetQuantity: req.body.smallPetQuantity,
