@@ -1,4 +1,5 @@
 const Driver = require('../models').Driver;
+const Vehicle = require('../models').Vehicle;
 const Party = require('../models').Party;
 const Travel = require('../models').Travel;
 const User = require('../models').User;
@@ -48,6 +49,7 @@ module.exports = {
             var hasStatus = (!!req.query.status);
             var hasMinScore = (!!req.query.minScore);
             var hasMaxScore = (!!req.query.maxScore);
+            var hasPlate = (!!req.query.plate)
             if (hasDriverId) {
                 console.log('Find By PK: ' + req.query.driverId);
                 return Driver
@@ -64,7 +66,7 @@ module.exports = {
                         return res.status(200).send(driver);
                     })
                     .catch(error => res.status(400).send(error));
-            } else if (hasName && hasStatus && hasMinScore && hasMaxScore) {
+            } else if (hasName && hasStatus && hasMinScore && hasMaxScore && hasPlate) {
                 return Driver
                     .findAll({
                         include: [{
@@ -72,6 +74,13 @@ module.exports = {
                             as: 'party',
                             where: {
                                 name: req.query.name
+                            }
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
+                            where: {
+                                licensePlate: req.query.plate
                             }
                         }],
                         where: {
@@ -146,6 +155,23 @@ module.exports = {
                     })
                     .then((drivers) => res.status(200).send(drivers))
                     .catch((error) => res.status(400).send(error.message));
+            } else if (hasPlate) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
+                            where: {
+                                licensePlate: req.query.plate
+                            }
+                        }]
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
             } else {
                 res.status(412).send("Precondition Failed");
             }
@@ -156,6 +182,10 @@ module.exports = {
                     include: [{
                         model: Party,
                         as: 'party',
+                    },
+                    {
+                        model: Vehicle,
+                        as: 'vehicle',
                     }]
                 })
                 .then((drivers) => res.status(200).send(drivers))
