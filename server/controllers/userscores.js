@@ -42,6 +42,7 @@ module.exports = {
         if (Object.keys(req.query).length > 0) {
             var hasUserScoreId = (!!req.query.userScoreId);
             var hasFromId = (!!req.query.fromId);
+            var hasToId = (!!req.query.toId);
             if (hasUserScoreId) {
                 console.log('Find by pk: '  + req.query.userScoreId);
                 return UserScore
@@ -60,6 +61,20 @@ module.exports = {
                         return res.status(400).send({message: "UserScores not found."})
                     })
                     .catch(error => res.status(400).send(error));    
+            } else if (hasToId) {
+                return UserScore
+                    .findAll( 
+                        {where: {
+                        toId: req.query.toId}})
+                    .then((userScores) => {
+                        if (!!userScores) {
+                            return res.status(200).send(userScores);  
+                        }
+                        return res.status(400).send({message: "UserScores not found."})
+                    })
+                    .catch(error => res.status(400).send(error));    
+            } else {
+                res.status(412).send("Precondition Failed");
             }
         } else {
             console.log('Find all');

@@ -42,12 +42,25 @@ module.exports = {
         console.log('Request find by query params: ' + JSON.stringify(req.query));
         if (Object.keys(req.query).length > 0) {
             var hasDriverScoreId = (!!req.query.driverScoreId);
+            var hasFromId = (!!req.query.fromId);
             var hasToId = (!!req.query.toId);
             if (hasDriverScoreId) {
                 console.log('Find by pk: '  + req.query.driverScoreId);
                 return DriverScore
                     .findByPk(req.query.driverScoreId)
                     .then((driverScores) => res.status(200).send(driverScores))
+                    .catch(error => res.status(400).send(error));
+            } else if (hasFromId) {
+                return DriverScore
+                    .findAll( 
+                        {where: {
+                        fromId: req.query.fromId}})
+                    .then((driverScores) => {
+                        if (!!driverScores) {
+                            return res.status(200).send(driverScores);  
+                        }
+                        return res.status(400).send({message: "DriverScores not found."})
+                    }) 
                     .catch(error => res.status(400).send(error));    
             } else if (hasToId) {
                 return DriverScore
@@ -61,6 +74,8 @@ module.exports = {
                         return res.status(400).send({message: "DriverScores not found."})
                     }) 
                     .catch(error => res.status(400).send(error));    
+            } else {
+                res.status(412).send("Precondition Failed");
             }
         } else {
             console.log('Find all');
