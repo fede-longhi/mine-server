@@ -43,7 +43,7 @@ module.exports = {
 
     getDriverById(req, res){
         return Driver
-            .findByPk(req.query.driverId, {
+            .findByPk(req.params.driverId, {
                 include: [
                     {
                         model: Party,

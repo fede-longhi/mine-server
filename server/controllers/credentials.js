@@ -5,7 +5,7 @@ const User = require('../models').User;
 const Vehicle = require('../models').Vehicle;
 const credentialsDTO = require('../dtos/request/credentialsDTO');
 const sequelize = require('../models/index').sequelize;
-const DISABLE = 'dehabilitado';
+const DISABLE = 'deshabilitado';
 
 module.exports = {
     login(req, res) {
@@ -111,10 +111,10 @@ module.exports = {
                                         })
                                         .then(party => {
                                             Vehicle.create({
-                                                brand : registerRequestDTO.brand,
-                                                model : registerRequestDTO.model,
-                                                licensePlate : registerRequestDTO.licensePlate,
-                                                color : registerRequestDTO.color,
+                                                brand : registerRequestDTO.carBrand,
+                                                model : registerRequestDTO.carModel,
+                                                licensePlate : registerRequestDTO.carPlate,
+                                                color : registerRequestDTO.carColor,
                                             })
                                             .then(vehicle => {
                                                 Driver.create({

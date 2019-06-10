@@ -28,7 +28,8 @@
     "start:dev": "nodemon ./bin/www.js",
     "test": "echo \"Error: no test spescified\" && exit 1",
     "db:restart": "sequelize db:drop && sequelize db:create && sequelize db:migrate && sequelize db:seed:all",
-    "restart:all": "sequelize db:drop && sequelize db:create && sequelize db:migrate && sequelize db:seed:all && nodemon ./bin/www.js"
+    "restart:all": "sequelize db:drop && sequelize db:create && sequelize db:migrate && sequelize db:seed:all && nodemon ./bin/www.js",
+    "restart:no-seed": "sequelize db:drop && sequelize db:create && sequelize db:migrate && nodemon ./bin/www.js"
   },
   "keywords": [],
   "author": "",
