@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
     price: DataTypes.DOUBLE,
+    driverLatitude: DataTypes.DOUBLE,
+    driverLongitude: DataTypes.DOUBLE,
     estimatedArrivalTime: {
       type: DataTypes.DOUBLE,
       defaultValue: 0
@@ -87,6 +89,8 @@ module.exports = (sequelize, DataTypes) => {
             var destination = travel.from.latitude.toString() + ',' + travel.from.longitude.toString();
             distanceUtil.getDistance(origin, destination)
             .then(distanceElements => {
+              travel.driverLatitude = driverPosition.latitude;
+              travel.driverLongitude = driverPosition.longitude;
               travel.estimatedArrivalTime = distanceElements.duration.value / 60; //minutos
               travel.driverDistance = istanceElements.distance.value/1000; // km
               travel.save()
@@ -115,6 +119,8 @@ module.exports = (sequelize, DataTypes) => {
             
             distanceUtil.getDistance(origin, destination)
             .then(distanceElements => {
+              travel.driverLatitude = driverPosition.latitude;
+              travel.driverLongitude = driverPosition.longitude;
               travel.estimatedArrivalTime = distanceElements.duration.value/60; //minutos
               travel.driverDistance = distanceElements.distance.value/1000; // km  
               

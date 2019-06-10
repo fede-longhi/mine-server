@@ -38,6 +38,12 @@ module.exports = {
             driverDistance: {
                 type: Sequelize.DOUBLE
             },
+            driverLatitude: {
+                type: Sequelize.DOUBLE
+            },
+            driverLongitude: {
+                type: Sequelize.DOUBLE
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
