@@ -1,11 +1,12 @@
 const Driver = require('../models').Driver;
+const Vehicle = require('../models').Vehicle;
 const Party = require('../models').Party;
 const Travel = require('../models').Travel;
 const User = require('../models').User;
 const Address = require('../models').Address;
 const UserScore = require('../models').UserScore;
 const DriverScore = require('../models').DriverScore;
-
+const Op = require('../models/index').Sequelize.Op;
 
 module.exports = {
     create(req, res) {
@@ -41,27 +42,155 @@ module.exports = {
     },
 
     retrieve(req, res) {
-        return Driver
-            .findOne({
-                where: {
-                    id: req.params.driverId,
-                },
-                include:[
-                    {
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
+        if (Object.keys(req.query).length > 0) {
+            var hasDriverId = (!!req.query.driverId);
+            var hasName = (!!req.query.name);
+            var hasStatus = (!!req.query.status);
+            var hasMinScore = (!!req.query.minScore);
+            var hasMaxScore = (!!req.query.maxScore);
+            var hasPlate = (!!req.query.plate)
+            if (hasDriverId) {
+                console.log('Find By PK: ' + req.query.driverId);
+                return Driver
+                    .findByPk(req.query.driverId, {include: [{
                         model: Party,
-                        as: 'party'
-                    }
-                ]
-            })
-            .then(driver => {
-                if (!driver) {
-                    return res.status(400).send({
-                        message: "Driver not found."
+                        as: 'party',
+                        }]})
+                    .then(driver => {
+                        if (!driver) {
+                            return res.status(404).send({
+                                message: 'Driver Not Found',
+                            });
+                        }
+                        return res.status(200).send(driver);
                     })
-                }
-                return res.status(200).send(driver);
-            })
-            .catch(error => res.status(400).send(error));
+                    .catch(error => res.status(400).send(error));
+            } else if (hasName && hasStatus && hasMinScore && hasMaxScore && hasPlate) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                            where: {
+                                name: req.query.name
+                            }
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
+                            where: {
+                                licensePlate: req.query.plate
+                            }
+                        }],
+                        where: {
+                            status: req.query.status,
+                            totalScore: {[Op.between] : [req.query.minScore,req.query.maxScore]}
+                        }
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMinScore && hasMaxScore) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.between] : [req.query.minScore,req.query.maxScore]}
+                        }
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMinScore) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.gte] : [req.query.minScore]}
+                        }
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMaxScore) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.lte] : [req.query.maxScore]}
+                        }
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasStatus) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            status: req.query.status
+                        }
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasName) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                            where: {
+                                name: req.query.name
+                            }
+                        }]
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasPlate) {
+                return Driver
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
+                            where: {
+                                licensePlate: req.query.plate
+                            }
+                        }]
+                    })
+                    .then((drivers) => res.status(200).send(drivers))
+                    .catch((error) => res.status(400).send(error.message));
+            } else {
+                res.status(412).send("Precondition Failed");
+            }
+        } else {
+            console.log('Find all');
+            return Driver
+                .findAll({
+                    include: [{
+                        model: Party,
+                        as: 'party',
+                    },
+                    {
+                        model: Vehicle,
+                        as: 'vehicle',
+                    }]
+                })
+                .then((drivers) => res.status(200).send(drivers))
+                .catch((error) => res.status(400).send(error.message));
+        }
     },
 
     update(req, res) {

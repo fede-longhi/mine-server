@@ -1,5 +1,6 @@
 const User = require('../models').User;
 const Party = require('../models').Party;
+const Op = require('../models/index').Sequelize.Op;
 
 module.exports = {
     create(req, res) {
@@ -27,7 +28,8 @@ module.exports = {
             .catch((error) => res.status(400).send(error.message));
     },
 
-    retrieve(req, res) {
+    findByPk(req, res) {
+        console.log('Find By PK: ' + req.query.travelId);
         return User
             .findByPk(req.params.userId)
             .then(user => {
@@ -39,6 +41,129 @@ module.exports = {
                 return res.status(200).send(user);
             })
             .catch(error => res.status(400).send(error));
+    },
+
+    retrieve(req, res) {
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
+        if (Object.keys(req.query).length > 0) {
+            var hasUserId = (!!req.query.userId);
+            var hasName = (!!req.query.name);
+            var hasStatus = (!!req.query.status);
+            var hasMinScore = (!!req.query.minScore);
+            var hasMaxScore = (!!req.query.maxScore);
+            if (hasUserId) {
+                console.log('Find By PK: ' + req.query.userId);
+                return User
+                    .findByPk(req.query.userId, {include: [{
+                        model: Party,
+                        as: 'party',
+                        }]})
+                    .then(user => {
+                        if (!user) {
+                            return res.status(404).send({
+                                message: 'User Not Found',
+                            });
+                        }
+                        return res.status(200).send(user);
+                    })
+                    .catch(error => res.status(400).send(error));
+            } else if (hasName && hasStatus && hasMinScore && hasMaxScore) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                            where: {
+                                name: req.query.name
+                            }
+                        }],
+                        where: {
+                            status: req.query.status,
+                            totalScore: {[Op.between] : [req.query.minScore,req.query.maxScore]}
+                        }
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMinScore && hasMaxScore) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.between] : [req.query.minScore,req.query.maxScore]}
+                        }
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMinScore) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.gte] : [req.query.minScore]}
+                        }
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasMaxScore) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            totalScore: {[Op.lte] : [req.query.maxScore]}
+                        }
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasStatus) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                        }],
+                        where: {
+                            status: req.query.status
+                        }
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else if (hasName) {
+                return User
+                    .findAll({
+                        include: [{
+                            model: Party,
+                            as: 'party',
+                            where: {
+                                name: req.query.name
+                            }
+                        }]
+                    })
+                    .then((users) => res.status(200).send(users))
+                    .catch((error) => res.status(400).send(error.message));
+            } else {
+                res.status(412).send("Precondition Failed");
+            }
+        } else {
+            console.log('Find all');
+            return User
+                .findAll({
+                    include: [{
+                        model: Party,
+                        as: 'party',
+                    }]
+                })
+                .then((users) => res.status(200).send(users))
+                .catch((error) => res.status(400).send(error.message));
+        }
     },
 
     update(req, res) {

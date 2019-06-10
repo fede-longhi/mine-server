@@ -41,8 +41,7 @@ module.exports = (app) => {
     // ****************** DRIVERS *******************
     app.put('/api/driverPosition/:driverId', driversController.updatePosition);
     app.post('/api/drivers', driversController.create);
-    app.get('/api/drivers', driversController.list);
-    app.get('/api/drivers/:driverId', driversController.retrieve);
+    app.get('/api/drivers', driversController.retrieve);
     app.put('/api/drivers/:driverId', driversController.update);
     app.delete('/api/drivers/:driverId', driversController.destroy);
     
@@ -52,8 +51,7 @@ module.exports = (app) => {
 
     // ********************* USERS *************************
     app.post('/api/users', usersController.create);
-    app.get('/api/users', usersController.list);
-    app.get('/api/users/:userId', usersController.retrieve);
+    app.get('/api/users', usersController.retrieve);
     app.put('/api/users/:userId', usersController.update);
     app.delete('/api/users/:userId', usersController.destroy);
 

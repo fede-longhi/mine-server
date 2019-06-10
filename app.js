@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(logger('dev'));
 // parse application/json
-app.use(bodyParser.json({ limit: '5mb' }))
+app.use(bodyParser.json({ limit: '10mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 require('./server/routes')(app);

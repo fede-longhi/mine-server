@@ -100,7 +100,7 @@ module.exports = {
     },
 
     retrieve(req, res) {
-        console.log('Request find by query params FileDocument: ' + JSON.stringify(req.query));
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
         if (Object.keys(req.query).length > 0) {
             var travelId = (!!req.query.travelId);
             var hasStartDate = (!!req.query.startDate);
@@ -246,7 +246,7 @@ module.exports = {
                         .then((travels) => res.status(200).send(travels))
                         .catch(error => res.status(400).send(error.message));
             } else {
-                return res.status(200).send(JSON.stringify((hasStartDate.toString() + hasEndDate.toString() + hasStatus.toString() + hasUserId.toString() + hasDriverId.toString())));
+                res.status(412).send("Precondition Failed");
             }
         } else {
             console.log('Find all');
@@ -265,29 +265,6 @@ module.exports = {
             .then((travels) => res.status(200).send(travels))
             .catch(error => res.status(400).send(error.message));
         }
-
-
-        return Travel
-            .findByPk(req.params.travelId, {
-                include: [{
-                        model: Address,
-                        as: 'from'
-                    },
-                    {
-                        model: Address,
-                        as: 'to'
-                    }
-                ]
-            })
-            .then(travel => {
-                if (!travel) {
-                    return res.status(404).send({
-                        message: 'Travel Not Found',
-                    });
-                }
-                return res.status(200).send(travel);
-            })
-            .catch(error => res.status(400).send(error));
     },
 
     getTravelStatus(req, res){
