@@ -37,7 +37,33 @@ module.exports = {
         .catch(error => res.status(400).send(error.message));
     },
 
-    retrieve(req, res){},
+    retrieve(req, res){
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
+        if (Object.keys(req.query).length > 0) {
+            var hasUserScoreId = (!!req.query.userScoreId);
+            var hasToId = (!!req.query.toId);
+            if (hasUserScoreId) {
+                console.log('Find by pk: '  + req.query.userScoreId);
+                return UserScore
+                    .findByPk(req.query.userScoreId)
+                    .then((userScores) => res.status(200).send(userScores))
+                    .catch(error => res.status(400).send(error));    
+            } else if (hasToId) {
+                return UserScore
+                    .findAll( 
+                        {where: {
+                        toId: req.query.toId}})
+                    .then((userScores) => res.status(200).send(userScores))
+                    .catch(error => res.status(400).send(error));    
+            }
+        } else {
+            console.log('Find all');
+            return UserScore
+                .findAll()
+                .then((userScores) => res.status(200).send(userScores))
+                .catch(error => res.status(400).send(error));
+        }
+    },
 
     update(req, res){},
 

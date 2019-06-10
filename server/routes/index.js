@@ -79,11 +79,11 @@ module.exports = (app) => {
 
     // ********************* DRIVER SCORES ***********************
     app.post('/api/driverScores', driverScoresController.create);
-    app.get('/api/driverScores', driverScoresController.list);
+    app.get('/api/driverScores', driverScoresController.retrieve);
 
     // ********************* USER SCORES *************************
     app.post('/api/userScores', userScoresController.create);
-    app.get('/api/userScores', userScoresController.list);
+    app.get('/api/userScores', userScoresController.retrieve);
 
     // ********************* FILE DOCUMENTS *************************
     app.post('/api/fileDocuments', fileDocumentsController.create);
