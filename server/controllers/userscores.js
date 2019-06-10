@@ -46,7 +46,12 @@ module.exports = {
                 console.log('Find by pk: '  + req.query.userScoreId);
                 return UserScore
                     .findByPk(req.query.userScoreId)
-                    .then((userScores) => res.status(200).send(userScores))
+                    .then((userScores) => {
+                        if (userScores.length == 0) {
+                            return res.status(204).send(userScores);
+                        }
+                        return res.status(200).send(userScores)
+                    })
                     .catch(error => res.status(400).send(error));    
             } else if (hasToId) {
                 return UserScore

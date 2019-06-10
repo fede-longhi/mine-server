@@ -54,7 +54,12 @@ module.exports = {
                     .findAll( 
                         {where: {
                         toId: req.query.toId}})
-                    .then((driverScores) => res.status(200).send(driverScores))
+                    .then((driverScores) => {
+                        if (driverScores.length == 0) {
+                            return res.status(204).send(driverScores);
+                        }
+                        return res.status(200).send(driverScores)
+                    }) 
                     .catch(error => res.status(400).send(error));    
             }
         } else {
