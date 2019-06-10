@@ -41,6 +41,7 @@ module.exports = {
             .catch((error) => res.status(400).send(error));
     },
 
+
     retrieve(req, res) {
         console.log('Request find by query params: ' + JSON.stringify(req.query));
         if (Object.keys(req.query).length > 0) {
@@ -53,14 +54,20 @@ module.exports = {
             if (hasDriverId) {
                 console.log('Find By PK: ' + req.query.driverId);
                 return Driver
-                    .findByPk(req.query.driverId, {include: [{
-                        model: Party,
-                        as: 'party',
+                    .findByPk(req.query.driverId, {include: [
+                        {
+                            model: Party,
+                            as: 'party',
                         },
                         {
                             model: Vehicle,
                             as: 'vehicle',
-                        }]})
+                        },
+                        {
+                            model: Address,
+                            as: 'location'
+                        }
+                    ]})
                     .then(driver => {
                         if (!driver) {
                             return res.status(404).send({
