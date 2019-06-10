@@ -42,6 +42,7 @@ module.exports = (app) => {
     app.put('/api/driverPosition/:driverId', driversController.updatePosition);
     app.post('/api/drivers', driversController.create);
     app.get('/api/drivers', driversController.retrieve);
+    app.get('/api/drivers/:driverId', driversController.getDriverById);
     app.put('/api/drivers/:driverId', driversController.update);
     app.delete('/api/drivers/:driverId', driversController.destroy);
     

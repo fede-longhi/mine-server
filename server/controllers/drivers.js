@@ -41,6 +41,35 @@ module.exports = {
             .catch((error) => res.status(400).send(error));
     },
 
+    getDriverById(req, res){
+        return Driver
+            .findByPk(req.query.driverId, {
+                include: [
+                    {
+                        model: Party,
+                        as: 'party',
+                    },
+                    {
+                        model: Vehicle,
+                        as: 'vehicle',
+                    },
+                    {
+                        model: Address,
+                        as: 'location'
+                    }
+                ]
+            })
+            .then(driver => {
+                if (!driver) {
+                    return res.status(404).send({
+                        message: 'Driver Not Found',
+                    });
+                }
+                return res.status(200).send(driver);
+            })
+            .catch(error => res.status(400).send(error));
+    },
+
 
     retrieve(req, res) {
         console.log('Request find by query params: ' + JSON.stringify(req.query));
