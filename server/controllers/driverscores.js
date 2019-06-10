@@ -31,13 +31,41 @@ module.exports = {
     },
 
     list(req, res) {
+        console.log('Find all');
         return DriverScore
         .findAll()
         .then((driverScores) => res.status(200).send(driverScores))
         .catch(error => res.status(400).send(error));
     },
 
-    retrieve(req, res){},
+    retrieve(req, res){
+        console.log('Request find by query params: ' + JSON.stringify(req.query));
+        if (Object.keys(req.query).length > 0) {
+            var hasDriverScoreId = (!!req.query.driverScoreId);
+            var hasToId = (!!req.query.toId);
+            if (hasDriverScoreId) {
+                console.log('Find by pk: '  + req.query.driverScoreId);
+                return DriverScore
+                    .findByPk(req.query.driverScoreId)
+                    .then((driverScores) => res.status(200).send(driverScores))
+                    .catch(error => res.status(400).send(error));    
+            } else if (hasToId) {
+                return DriverScore
+                    .findAll( 
+                        {where: {
+                        toId: req.query.toId}})
+                    .then((driverScores) => res.status(200).send(driverScores))
+                    .catch(error => res.status(400).send(error));    
+            }
+        } else {
+            console.log('Find all');
+            return DriverScore
+                .findAll()
+                .then((driverScores) => res.status(200).send(driverScores))
+                .catch(error => res.status(400).send(error));
+        }
+
+    },
 
     update(req, res){},
 
