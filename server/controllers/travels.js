@@ -9,13 +9,14 @@ const Address = require('../models').Address;
  * contains all sockets of all users and drivers
  */
 var allSockets = require("../../bin/www");
-const TRAVEL_ACCEPTED_BY_USER = 'pending';
-const TRAVEL_ACCEPTED_BY_DRIVER = 'on course';
-const TRAVEL_COMPLETED = "completed";
-const TRAVEL_CANCELED_BY_USER = "canceled by user";
-const TRAVEL_CANCELED_BY_DRIVER = "canceled by driver";
+const TRAVEL_QUOTED = 'cotizado';
+const TRAVEL_ACCEPTED_BY_USER = 'pendiente';
+const TRAVEL_ACCEPTED_BY_DRIVER = 'en viaje';
+const TRAVEL_COMPLETED = "finalizado";
+const TRAVEL_CANCELED_BY_USER = "cancelado por usuario";
+const TRAVEL_CANCELED_BY_DRIVER = "cancelado por chofer";
 const VALUE_BY_DRIVER_CANCELED_TRAVEL = 0;
-const COMMENT_BY_DRIVER_CANCELED_TRAVEL = "The travel was canceled by driver";
+const COMMENT_BY_DRIVER_CANCELED_TRAVEL = "El viaje fue cancelado por el chofer";
 const travelDTO = require('../dtos/request/travelDTO');
 const DriverScore = require('../models').DriverScore;
 const Driver = require('../models').Driver;
@@ -384,7 +385,7 @@ module.exports = {
     simulateQuote(req, res) {
         console.log("DATA: " + JSON.stringify(req.body));
         var travel = Travel.build({
-            status: 'quoted',
+            status: TRAVEL_QUOTED,
             smallPetQuantity: req.body.smallPetQuantity,
             mediumPetQuantity: req.body.mediumPetQuantity,
             bigPetQuantity: req.body.bigPetQuantity,
