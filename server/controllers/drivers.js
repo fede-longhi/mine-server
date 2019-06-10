@@ -56,6 +56,10 @@ module.exports = {
                     .findByPk(req.query.driverId, {include: [{
                         model: Party,
                         as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
                         }]})
                     .then(driver => {
                         if (!driver) {
@@ -96,6 +100,10 @@ module.exports = {
                         include: [{
                             model: Party,
                             as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
                         }],
                         where: {
                             totalScore: {[Op.between] : [req.query.minScore,req.query.maxScore]}
@@ -109,6 +117,10 @@ module.exports = {
                         include: [{
                             model: Party,
                             as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
                         }],
                         where: {
                             totalScore: {[Op.gte] : [req.query.minScore]}
@@ -122,6 +134,10 @@ module.exports = {
                         include: [{
                             model: Party,
                             as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
                         }],
                         where: {
                             totalScore: {[Op.lte] : [req.query.maxScore]}
@@ -135,6 +151,10 @@ module.exports = {
                         include: [{
                             model: Party,
                             as: 'party',
+                        },
+                        {
+                            model: Vehicle,
+                            as: 'vehicle',
                         }],
                         where: {
                             status: req.query.status
@@ -151,8 +171,11 @@ module.exports = {
                             where: {
                                 name: req.query.name
                             }
-                        }]
-                    })
+                            },
+                            {
+                                model: Vehicle,
+                                as: 'vehicle',
+                            }]})
                     .then((drivers) => res.status(200).send(drivers))
                     .catch((error) => res.status(400).send(error.message));
             } else if (hasPlate) {
