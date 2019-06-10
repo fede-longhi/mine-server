@@ -2,9 +2,10 @@ const Driver = require('../models').Driver;
 const Party = require('../models').Party;
 const FileDocument = require('../models').FileDocument;
 const User = require('../models').User;
+const Vehicle = require('../models').Vehicle;
 const credentialsDTO = require('../dtos/request/credentialsDTO');
 const sequelize = require('../models/index').sequelize;
-const DISABLE = 'disable';
+const DISABLE = 'dehabilitado';
 
 module.exports = {
     login(req, res) {
@@ -109,13 +110,21 @@ module.exports = {
                                             dni: registerRequestDTO.dni,
                                         })
                                         .then(party => {
-                                            Driver.create({
+                                            Vehicle.create({
+                                                brand : registerRequestDTO.brand,
+                                                model : registerRequestDTO.model,
+                                                licensePlate : registerRequestDTO.licensePlate,
+                                                color : registerRequestDTO.color,
+                                            })
+                                            .then(vehicle => {
+                                                Driver.create({
                                                     id: registerRequestDTO.facebookId,
                                                     status: DISABLE,
                                                     licenseNumber: registerRequestDTO.licenseNumber,
                                                     totalScore: 0,
                                                     scoreQuantity: 0,
-                                                    partyId: party.id
+                                                    partyId: party.id,
+                                                    vehicleId: vehicle.id
                                                 })
                                                 .then(driver => {
                                                     registerRequestDTO.files.forEach(fileDocument => {
@@ -133,6 +142,11 @@ module.exports = {
                                                     console.error(err);
                                                     res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
                                                 });
+                                            })
+                                            .catch(err => {
+                                                console.error(err);
+                                                res.status(500).send(JSON.stringify({ status: 500, message: "unexpected error" }));
+                                            });
                                         })
                                         .catch(error => res.status(400).send(error));
                                 })

@@ -7,7 +7,10 @@ exports.RegisterRequestDTO = class RegisterRequestDTO {
         this.name = arg.name;
         this.phone = arg.phone;
         this.dni = arg.dni;
-        this.licenseNumber = arg.licenseNumber;
+        this.brand = arg.brand;
+        this.model = arg.model;
+        this.licensePlate = arg.licensePlate;
+        this.color = arg.color;
         this.files = [];
         if (arg.files != null && arg.files != undefined) {
             arg.files.forEach(file => {
