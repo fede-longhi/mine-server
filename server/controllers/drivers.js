@@ -42,7 +42,17 @@ module.exports = {
 
     retrieve(req, res) {
         return Driver
-            .findByPk(req.params.driverId)
+            .findOne({
+                where: {
+                    id: req.params.driverId,
+                },
+                include:[
+                    {
+                        model: Party,
+                        as: 'party'
+                    }
+                ]
+            })
             .then(driver => {
                 if (!driver) {
                     return res.status(400).send({
