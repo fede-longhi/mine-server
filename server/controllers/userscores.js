@@ -41,24 +41,24 @@ module.exports = {
         console.log('Request find by query params: ' + JSON.stringify(req.query));
         if (Object.keys(req.query).length > 0) {
             var hasUserScoreId = (!!req.query.userScoreId);
-            var hasToId = (!!req.query.toId);
+            var hasFromId = (!!req.query.fromId);
             if (hasUserScoreId) {
                 console.log('Find by pk: '  + req.query.userScoreId);
                 return UserScore
                     .findByPk(req.query.userScoreId)
-                    .then((userScores) => {
-                        if (userScores.length == 0) {
-                            return res.status(204).send(userScores);
-                        }
-                        return res.status(200).send(userScores)
-                    })
+                    .then((userScores) =>  res.status(200).send(userScores))
                     .catch(error => res.status(400).send(error));    
-            } else if (hasToId) {
+            } else if (hasFromId) {
                 return UserScore
                     .findAll( 
                         {where: {
-                        toId: req.query.toId}})
-                    .then((userScores) => res.status(200).send(userScores))
+                        fromId: req.query.fromId}})
+                    .then((userScores) => {
+                        if (!!userScores) {
+                            return res.status(200).send(userScores);  
+                        }
+                        return res.status(400).send({message: "UserScores not found."})
+                    })
                     .catch(error => res.status(400).send(error));    
             }
         } else {

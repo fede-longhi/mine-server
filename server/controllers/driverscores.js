@@ -55,10 +55,10 @@ module.exports = {
                         {where: {
                         toId: req.query.toId}})
                     .then((driverScores) => {
-                        if (driverScores.length == 0) {
-                            return res.status(204).send(driverScores);
+                        if (!!driverScores) {
+                            return res.status(200).send(driverScores);  
                         }
-                        return res.status(200).send(driverScores)
+                        return res.status(400).send({message: "DriverScores not found."})
                     }) 
                     .catch(error => res.status(400).send(error));    
             }
