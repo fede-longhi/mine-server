@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
   Travel.prototype.getDriverDistanceToOrigin = function(){
     var travel = this;
     return new Promise(function(resolve, reject){
-      if (travel.status == 'on course'){
+      if (travel.status == 'en viaje'){
         Driver.findByPk(travel.driverId)
         .then(driver => {
           Address.findByPk(driver.locationId)
@@ -109,7 +109,7 @@ module.exports = (sequelize, DataTypes) => {
   Travel.prototype.getDriverDistanceToDestiny = function(){
     var travel = this;
     return new Promise(function(resolve, reject){
-      if (travel.status == 'on course'){
+      if (travel.status == 'en viaje'){
         sequelize.models.Driver.findByPk(travel.driverId)
         .then(driver => {
           sequelize.models.Address.findByPk(driver.locationId)
