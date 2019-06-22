@@ -5,6 +5,7 @@ var travel = require("../../dtos/model/travel");
 const Driver = require("../../models").Driver;
 const Party = require('../../models').Party;
 const User = require("../../models").User;
+const Address = require("../../models").Address;
 var realDrivers = new Array;
 var realUsers = new Array;
 var allDrivers = new Map();
@@ -44,6 +45,7 @@ exports.findAllUsers = function findAllUsers() {
 
 exports.loadUsers = function loadUsers(req, res, next) {
     console.log("USER:---------------------------------> ");
+    realUsers = [];
     User.findAll({
         include: [{
             model: Party,
@@ -80,10 +82,15 @@ exports.findAllDrivers = function findAllDrivers() {
 };
 
 exports.loadDrivers = function loadDrivers(req, res, next) {
+    realDrivers = [];
     Driver.findAll({
         include: [{
             model: Party,
             as: 'party'
+        },
+        {
+            model: Address,
+            as: 'location'
         }]
     })
     .then((drivers) => {
@@ -97,6 +104,9 @@ exports.loadDrivers = function loadDrivers(req, res, next) {
             driver.score =scorePromedio;
             driver.prioriry = scorePromedio+driver.pointsCategory;
             driver.amountTravels = element.travelAmount;
+            driver.latitude = element.location == undefined ? "": element.location.latitude;
+            driver.longitude = element.location == undefined ? "": element.location.longitude;
+            driver.status = element.status;
             realDrivers.push(driver);
         });
         next();

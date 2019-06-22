@@ -2,6 +2,8 @@ var allSockets = require("../../bin/www");
 var haversine = require("haversine");
 var travelDTOModel = require("../dtos/request/travelDTO");
 var driversMock = require("../mock/mockData/partyServiceMock");
+var partyService = require("../mock/mockData/partyServiceMock");
+
 require("custom-env").env("pmm");
 const Travel = require('../models/').Travel;
 const Driver = require("../models").Driver;
@@ -342,7 +344,7 @@ function findBestDriver(travelId, searchRadius, excludedDrivers, travel) {
 
     var candidateDrivers = [];
 
-    positionsDrivers.forEach((value, key) => {
+    /*positionsDrivers.forEach((value, key) => {
         distance = haversine(value, from, { unit: 'meter' });
         console.log("latitude Driver: " + value.latitude);
         console.log("longitude Driver: " + value.longitude);
@@ -355,8 +357,33 @@ function findBestDriver(travelId, searchRadius, excludedDrivers, travel) {
             var aDriver = travelService.findDriver(key);
             candidateDrivers.push(aDriver);
         }
+    });*/
+    var allRealDriver = [];
+    allRealDriver = partyService.findAllDrivers();
+    const statusAvailable = "disponible";
+
+    allRealDriver.forEach((value) => {
+        console.log("==================================");
+        console.log("id: " + value.id);
+        console.log("key: " + value.key);
+        console.log("latitude Driver: " + value.latitude);
+        console.log("longitude Driver: " + value.longitude);
+        console.log("latitude origin " + from.latitude);
+        console.log("longitude origin " + from.longitude);
+
+        if(value.longitude != "" && value.latitude != "") {
+            distance = haversine(value, from, { unit: 'meter' });
+            console.log("distancia: " + distance);
+            console.log("STATUS: " + value.status);
+            if (distance < searchRadius && value.status == statusAvailable) {
+                //obtain driver to evaluate his score
+                console.log("El chofer está dentro del radio de búsqueda");
+                //var aDriver = travelService.findDriver(key);
+                candidateDrivers.push(value);
+            }
+        }
     });
-    
+
     console.log("*** terminó la búsqueda de choferes ***");
 
     if (candidateDrivers.length == 0) {
