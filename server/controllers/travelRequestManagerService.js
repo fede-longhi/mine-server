@@ -286,14 +286,17 @@ function manageTravelRequest(travelId) {
                     .then(travel => {
                         travel.update({ driverId: aDriver.id })
                         .then( (travelUpdated) => {
+                            Driver.findByPk(aDriver.id)
+                            .then(driverToUpdated => {
+                                var newTravelAmount = driverToUpdated.travelAmount + 1;
+                                Driver.update({ travelAmount: newTravelAmount }, { where: { 'id': driverToUpdated.id } })
+                                    .then(resolve(travelUpdated))
+                            })
+                            .catch(err => { reject(err) });
                             resolve(travelUpdated);
                         })
                         .catch(err => reject(err));
                     })
-                    .catch(err => { 
-                        console.log("EEEEEEEEEEEEEEE: " + err); 
-                        reject(err);
-                    });
             })
             .catch((error) => {
                 if (error == REJECT_ERROR) {
