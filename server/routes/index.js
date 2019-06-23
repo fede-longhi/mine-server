@@ -76,6 +76,7 @@ module.exports = (app) => {
 
     // ********************* CREDENTIALS *************************
     app.post('/api/login', credentialsController.login);
+    app.post('/api/logout', credentialsController.logout);
     app.post('/api/register', credentialsController.register);
 
     // ********************* DRIVER SCORES ***********************

@@ -8,7 +8,12 @@ const UserScore = require('../models').UserScore;
 const DriverScore = require('../models').DriverScore;
 const Op = require('../models/index').Sequelize.Op;
 
+//<key,value> = <idDriver,aTravelNotificationDTO>
+var travelsToDrivers = new Map();
+
 module.exports = {
+    travelsToDrivers : travelsToDrivers,
+
     create(req, res) {
         return Driver
             .create({
@@ -355,9 +360,19 @@ module.exports = {
             })
             .then( address => {
                 driver.locationId = address.id;
+                driver.status = "disponible";
                 driver.save()
                 .then( () => {
-                    res.status(200).send();
+
+                    //send travel if driver is assign a travel
+                    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                    console.log(JSON.stringify(travelsToDrivers));
+                    if (travelsToDrivers.has((req.params.driverId))){
+                        res.status(200).send(travelsToDrivers.get(req.params.driverId));
+                        travelsToDrivers.delete(req.params.driverId);
+                    }
+                    else
+                        res.status(200).send();
                 })
                 .catch(error => res.status(400).send(error));
             })

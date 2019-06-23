@@ -36,6 +36,11 @@ exports.responseOfDriverToTravels = responseOfDriverToTravels;*/
  */
 travelService = require("../mock/travelServiceMock");
 
+
+/*//<key,value> = <travelId,{status:100, message:"message"}>
+var responseEndTravelToUser = new Map();*/
+
+
 module.exports = {
     create(req, res) {
         return Travel
@@ -485,7 +490,6 @@ module.exports = {
                     console.log("$$$$$$$$$$: "+JSON.stringify(aTravelConfirmationResponseDTO));
 
                     //add distance and time
-
                     res.status(200).send(aTravelConfirmationResponseDTO);
                 })
                 .catch((err => res.status(500).send(err)));
@@ -504,11 +508,11 @@ module.exports = {
                 .then(travel => {
                     if (travel != null) {
                         Travel.update({ "status": TRAVEL_COMPLETED }, { where: { "id": travel.id } });
-                        var connectionUsers = allSockets.connectionUsers;
-                        var aConnectionUser = null;
+                        //var connectionUsers = allSockets.connectionUsers;
+                        //var aConnectionUser = null;
                         console.log("travel data: " + JSON.stringify(travel));
                         //console.log("conections: "+JSON.stringify(connectionUsers.keys()))
-                        try {
+                        /*try {
                             console.log("connectionUsers" + connectionUsers);
                             if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
                                 aConnectionUser = connectionUsers.get(travel.userId);
@@ -516,16 +520,16 @@ module.exports = {
                             }
                         } catch (err) {
                             console.error(err);
-                        }
-                        if (aConnectionUser == null || aConnectionUser == undefined) {
+                        }*/
+                        /*if (aConnectionUser == null || aConnectionUser == undefined) {
                             console.error("There are no Users");
                             return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
-                        } else {
-                            console.info("Available User");
+                        } else {*/
+                            //console.info("Available User");
                             console.log("Travel update right");
-                            aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
+                            //aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
                             return res.status(200).send(JSON.stringify({ status: 200, message: "Finalized ok" }));
-                        }
+                        //}
                     } else {
                         return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
                     }
@@ -581,23 +585,27 @@ module.exports = {
                     .then(travel => {
                         if (travel != null) {
                             Travel.update({ "status": TRAVEL_CANCELED_BY_DRIVER }, { where: { "id": travel.id } });
-                            var connectionUsers = allSockets.connectionUsers;
-                            var aConnectionUser = null;
+                            //var connectionUsers = allSockets.connectionUsers;
+                            //var aConnectionUser = null;
                             console.log("travel data: " + travel);
-                            try {
+                            /*try {
                                 if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
                                     aConnectionUser = connectionUsers.get(travel.userId)
                                 }
                             } catch (err) {
                                 console.error(err);
-                            }
-                            if (aConnectionUser == null || aConnectionUser == undefined) {
+                            }*/
+                            /*if (aConnectionUser == null || aConnectionUser == undefined) {
                                 console.error("There are no Users");
                                 return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
-                            } else {
-                                console.info("Available User");
+                            } else {*/
+                                //console.info("Available User");
                                 console.log("Travel update right");
-                                aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
+                                //aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
+
+                                //hay que setear un mensaje para el suuario y cambiar el estado del chofer a disponible
+                                
+
                                 DriverScore
                                     .create({
                                         fromId: travel.userId,
@@ -616,7 +624,7 @@ module.exports = {
                                             })
                                             .catch(error => { throw error });
                                     })
-                            }
+                            //}
                         } else {
                             return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
                         }

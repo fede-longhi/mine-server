@@ -9,6 +9,7 @@ const Travel = require('../models/').Travel;
 const Driver = require("../models").Driver;
 const Address = require("../models").Address;
 const IS_MOCK = process.env.IS_MOCK === "true";
+const statusInTravel = "en viaje";
 
 //to obtain the response of driver
 var travelService = require("../mock/travelServiceMock");
@@ -16,6 +17,8 @@ var travelService = require("../mock/travelServiceMock");
 //to save response of driver to travel
 var responseOfDriverToTravels = new Map();
 
+
+var travelsToDrivers = require("../../server/controllers/drivers").travelsToDrivers;
 
 const aTravelMock = {
     "driverId": 0,
@@ -101,7 +104,7 @@ function manageTravelRequest(travelId) {
                         console.log("se ha encontrado al mejor chofer con id: " + aDriverSelected.id);
 
                         //obtaining socket of driver
-                        var connectionDrivers = allSockets.connectionDrivers;
+                        /*var connectionDrivers = allSockets.connectionDrivers;
                         var aConnectionDriver = null;
                         try {
                             if (connectionDrivers != undefined) {
@@ -119,16 +122,16 @@ function manageTravelRequest(travelId) {
                             console.error(err);
                             console.log("Hubo problemas al tratatar de encontrar el socket del chofer ");
                             rejectBucle(REJECT_ERROR)
-                        }
+                        }*/
 
                         //notify to driver if this is available
-                        if (aConnectionDriver == null || aConnectionDriver == undefined) {
+                        /*if (aConnectionDriver == null || aConnectionDriver == undefined) {
                             console.error("Driver selected now is dissconnected, id: " + aDriverSelected.id);
                             console.error("No se pudo obtener el socket del chofer");
                             rejectBucle(REJECT_ERROR);
-                        } else {
+                        } else {*/
 
-                            console.info("Driver selected is available");
+                            //console.info("Driver selected is available");
                             console.info("Datos del viaje: " + JSON.stringify(aTravel));
 
                             // build DTO for driver
@@ -149,7 +152,8 @@ function manageTravelRequest(travelId) {
                             aTravelNotificationDTO.hasCompanion = aTravel.hasCompanion;
 
                             //notify to driver
-                            aConnectionDriver.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelNotificationDTO);
+                            //aConnectionDriver.socket.emit("NOTIFICATION_OF_TRAVEL", aTravelNotificationDTO);
+                            travelsToDrivers.set(aDriverSelected.id,aTravelNotificationDTO);
                             console.info("Se notificó el viaje al Chofer");
 
                             //map donde se almacenan las respuestas de los choferes
@@ -231,7 +235,7 @@ function manageTravelRequest(travelId) {
                                 }
 
                             });
-                        }
+                        //}
 
                     } else {
                         //driver not found, increase the radius... se tiene que ver
@@ -289,7 +293,9 @@ function manageTravelRequest(travelId) {
                             Driver.findByPk(aDriver.id)
                             .then(driverToUpdated => {
                                 var newTravelAmount = driverToUpdated.travelAmount + 1;
-                                Driver.update({ travelAmount: newTravelAmount }, { where: { 'id': driverToUpdated.id } })
+
+                                Driver.update({ travelAmount: newTravelAmount/*, status: statusInTravel*/  },
+                                    { where: { 'id': driverToUpdated.id } })
                                     .then(resolve(travelUpdated))
                             })
                             .catch(err => { reject(err) });
