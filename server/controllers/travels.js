@@ -22,6 +22,8 @@ const DriverScore = require('../models').DriverScore;
 const Driver = require('../models').Driver;
 var partyDTOModel = require("../dtos/request/partyDTO");
 var managerTravelRequest = require('./travelRequestManagerService');
+const statusAvailable = "disponible";
+
 
 /**
  * map when storage response of the drivers
@@ -508,28 +510,16 @@ module.exports = {
                 .then(travel => {
                     if (travel != null) {
                         Travel.update({ "status": TRAVEL_COMPLETED }, { where: { "id": travel.id } });
-                        //var connectionUsers = allSockets.connectionUsers;
-                        //var aConnectionUser = null;
                         console.log("travel data: " + JSON.stringify(travel));
-                        //console.log("conections: "+JSON.stringify(connectionUsers.keys()))
-                        /*try {
-                            console.log("connectionUsers" + connectionUsers);
-                            if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
-                                aConnectionUser = connectionUsers.get(travel.userId);
-                                console.log("aConnectionUsers" + aConnectionUser);
-                            }
-                        } catch (err) {
-                            console.error(err);
-                        }*/
-                        /*if (aConnectionUser == null || aConnectionUser == undefined) {
-                            console.error("There are no Users");
-                            return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
-                        } else {*/
-                            //console.info("Available User");
-                            console.log("Travel update right");
-                            //aConnectionUser.socket.emit("NOTIFICATION_FINALIZED_OF_TRAVEL", { message: "Finalized ok" });
+                        console.log("Travel update right");
+                        let driverId = req.body.id;
+                        Driver.findByPk(driverId)
+                        .then(driver => {
+                            driver.update({
+                                    status: statusAvailable
+                            });
                             return res.status(200).send(JSON.stringify({ status: 200, message: "Finalized ok" }));
-                        //}
+                        })
                     } else {
                         return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
                     }
@@ -547,13 +537,9 @@ module.exports = {
             console.log("///////////CANCEL////: " + req.body);
             console.log("cancel body: " + JSON.stringify(req.body));
             var aTravelCancelRequestDTO = new travelDTO.TravelCancelRequestDTO(req.body);
-            var connectionUsers = allSockets.connectionUsers;
-            var connectionDrivers = allSockets.connectionDrivers;
-            var aConnectionUser = null;
-            var aConnectionDriver = null;
             if (aTravelCancelRequestDTO.role == 'user') {
-                try {
-                    if (connectionDrivers != undefined /*&& connectionDrivers.has(aTravelCancelRequestDTO.id)*/ ) {
+                /*try {
+                    if (connectionDrivers != undefined  ) {
                         console.log("tamaño del map de sockets drivers: " + connectionDrivers.size)
                         aConnectionDriver = connectionDrivers.values().next().value;
                         //aConnectionDriver = connectionDrivers.get(aTravelCancelRequestDTO.id)
@@ -578,53 +564,35 @@ module.exports = {
                                 .catch(error => { throw error });
                         })
                         .catch(error => { throw error });
-                }
+                }*/
             } else if (aTravelCancelRequestDTO.role == 'driver') {
                 Travel
                     .findByPk(req.body.travelId)
                     .then(travel => {
                         if (travel != null) {
                             Travel.update({ "status": TRAVEL_CANCELED_BY_DRIVER }, { where: { "id": travel.id } });
-                            //var connectionUsers = allSockets.connectionUsers;
-                            //var aConnectionUser = null;
                             console.log("travel data: " + travel);
-                            /*try {
-                                if (connectionUsers != undefined && connectionUsers.has(travel.userId)) {
-                                    aConnectionUser = connectionUsers.get(travel.userId)
-                                }
-                            } catch (err) {
-                                console.error(err);
-                            }*/
-                            /*if (aConnectionUser == null || aConnectionUser == undefined) {
-                                console.error("There are no Users");
-                                return res.status(203).send(JSON.stringify({ status: 203, message: "There are not Users" }));
-                            } else {*/
-                                //console.info("Available User");
                                 console.log("Travel update right");
-                                //aConnectionUser.socket.emit("NOTIFICATION_CANCELED_OF_TRAVEL", { message: "Canceled by Driver ok" });
 
-                                //hay que setear un mensaje para el suuario y cambiar el estado del chofer a disponible
-                                
-
-                                DriverScore
-                                    .create({
-                                        fromId: travel.userId,
-                                        toId: travel.driverId,
-                                        travelId: travel.id,
-                                        value: VALUE_BY_DRIVER_CANCELED_TRAVEL,
-                                        comments: COMMENT_BY_DRIVER_CANCELED_TRAVEL
-                                    })
-                                    .then(driverScore => {
-                                        Driver.findByPk(driverScore.toId)
-                                            .then(driver => {
-                                                var newTotalScore = driver.totalScore + driverScore.value;
-                                                var newScoreQuantity = driver.scoreQuantity + 1;
-                                                Driver.update({ totalScore: newTotalScore, scoreQuantity: newScoreQuantity }, { where: { 'id': driver.id } })
-                                                return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });
-                                            })
-                                            .catch(error => { throw error });
-                                    })
-                            //}
+                            DriverScore
+                                .create({
+                                    fromId: travel.userId,
+                                    toId: travel.driverId,
+                                    travelId: travel.id,
+                                    value: VALUE_BY_DRIVER_CANCELED_TRAVEL,
+                                    comments: COMMENT_BY_DRIVER_CANCELED_TRAVEL
+                                })
+                                .then(driverScore => {
+                                    Driver.findByPk(driverScore.toId)
+                                        .then(driver => {
+                                            var newTotalScore = driver.totalScore + driverScore.value;
+                                            var newScoreQuantity = driver.scoreQuantity + 1;
+                                            Driver.update({ totalScore: newTotalScore, scoreQuantity: newScoreQuantity, status: statusAvailable },
+                                                 { where: { 'id': driver.id } })
+                                            return res.status(200).send({ status: 200, message: "Canceled by Driver ok" });
+                                        })
+                                        .catch(error => { throw error });
+                                })
                         } else {
                             return res.status(203).send(JSON.stringify({ status: 203, message: "There not exists travel" }));
                         }

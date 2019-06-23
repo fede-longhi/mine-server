@@ -360,7 +360,7 @@ module.exports = {
             })
             .then( address => {
                 driver.locationId = address.id;
-                driver.status = "disponible";
+                //driver.status = "disponible";
                 driver.save()
                 .then( () => {
 

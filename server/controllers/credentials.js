@@ -21,12 +21,11 @@ module.exports = {
                         if (!driver) {
                             return res.status(203).send({ status: 203, message: "driver not exists" });
                         }
-                        //var isLogged = driver.status != 'offline';
                         if (driver.status != statusDisable)
                             driver.update({
                                 status: statusAvailable
                             });
-                        res.status(200).send(JSON.stringify({ status: 200, message: "login successfuly"/*, logged: isLogged*/ }));
+                        res.status(200).send(JSON.stringify({ status: 200, message: "login successfuly" }));
                     })
                     .catch(error => {
                         console.error(error);
@@ -39,11 +38,12 @@ module.exports = {
                         if (!user) {
                             return res.status(203).send({ status: 203, message: "user not exists" });
                         }
+
                         user.update({
                             status: statusAvailable
                         });
-                        //var isLogged = user.status != 'offline';
-                        res.status(200).send(JSON.stringify({ status: 200, message: "login successfuly"/*, logged: isLogged*/ }));
+
+                        res.status(200).send(JSON.stringify({ status: 200, message: "login successfuly" }));
                     })
                     .catch(error => {
                         console.error(error);
@@ -66,13 +66,13 @@ module.exports = {
                         if (!driver) {
                             return res.status(203).send({ status: 203, message: "driver not exists" });
                         }
-                        var isLogged = driver.status != 'offline';
-                        //if (driver.status != statusDisable)
+                        if (driver.status != statusDisable)
                             driver.update({
                                 status: statusDisconnected
                             });
-                        res.status(200).send(JSON.stringify({ status: 200, message: "logout successfuly"/*, logged: isLogged*/ }));
+                        res.status(200).send(JSON.stringify({ status: 200, message: "logout successfuly"}));
                     })
+
                     .catch(error => {
                         console.error(error);
                         res.status(500).send(error);
@@ -84,11 +84,10 @@ module.exports = {
                         if (!user) {
                             return res.status(203).send({ status: 203, message: "user not exists" });
                         }
-                        //var isLogged = user.status != 'offline';
                         user.update({
                             status: statusDisconnected
                         });
-                        res.status(200).send(JSON.stringify({ status: 200, message: "logout successfuly"/*, logged: isLogged*/ }));
+                        res.status(200).send(JSON.stringify({ status: 200, message: "logout successfuly"}));
                     })
                     .catch(error => {
                         console.error(error);
